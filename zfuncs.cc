@@ -14550,8 +14550,9 @@ void Tree::dump(int level)
    else name = tname;
    printz("%*s level: %d  name: %s  subs: %d  mem: %d \n",
                         level*2,"",level,name,nsub,tmem);
-   for (int ii = 0; ii < nsub; ii++)
-         if (psub[ii]) psub[ii]->dump(level+1);
+   for (int ii = 0; ii < nsub; ++ii){
+       if (psub[ii]) psub[ii]->dump(level+1);
+   }
 }
 
 
@@ -14563,8 +14564,9 @@ void Tree::stats(int nn[], int nd[])
 {
    nn[0] += 1;
    nd[0] += tmem;
-   for (int ii = 0; ii < nsub; ii++)
-      if (psub[ii]) psub[ii]->stats(&nn[1],&nd[1]);
+   for (int ii = 0; ii < nsub; ++ii){
+       if (psub[ii]) psub[ii]->stats(&nn[1],&nd[1]);
+   }
 }
 
 
