@@ -4840,8 +4840,10 @@ int zinitapp(cchar *appvers, cchar *homedir)                                    
       err = stat(logfile,&statb);
       if (! err) rename(logfile,oldlog);                                         //  rename old log file
       fid = freopen(logfile,"a",stdout);                                         //  redirect output to log file
+      bool fail = nullptr==fid;
       fid = freopen(logfile,"a",stderr);
-      if (! fid) printz("*** cannot redirect stdout and stderr \n");
+      fail |= nullptr==fid;
+      if (fail) printz("*** cannot redirect stdout and stderr \n");
    }
 
    printz("start %s %s \n",zappname,chTnow);
