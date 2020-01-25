@@ -114,7 +114,7 @@ int  parseprocfile(cchar *pfile, cchar *pname, double *value, ...);             
 int  parseprocrec(char *prec, int field, double *value, ...);                    //  get data from /proc file record
 int  coretemp();                                                                 //  get CPU core temperature, deg. C
 int  disktemp(char *disk);                                                       //  get disk temp, e.g. "/dev/sda"
-void zsleep(double dsecs);                                                       //  sleep specified seconds
+void zsleep(uint64 nanosec);                                                     //  sleep specified seconds
 void make_global_lockfile(cchar *lockname, char **lockfile);                     //  create global lockfile from lock name
 int  global_lock(cchar *lockfile);                                               //  obtain exclusive lock, multi-process
 int  global_unlock(int fd, cchar *lockfile);                                     //  release the lock

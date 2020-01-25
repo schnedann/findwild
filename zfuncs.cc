@@ -1107,17 +1107,14 @@ int disktemp(char *disk)
 //  sleep for specified time in seconds (double)
 //  signals can cause early return
 
-void zsleep(double dsecs)
-{
-   unsigned    isecs, nsecs;
-   timespec    tsecs;
+void zsleep(uint64 nanosec){
+  static constexpr uint64 const sec_in_ns = 1000000000;
 
-   if (dsecs <= 0) return;
-   isecs = unsigned(dsecs);
-   nsecs = unsigned(1000000000.0 * (dsecs - isecs));
-   tsecs.tv_sec = isecs;
-   tsecs.tv_nsec = nsecs;
-   nanosleep(&tsecs,null);
+   timespec    tsecs;
+   tsecs.tv_sec  = time_t(nanosec/sec_in_ns);
+   tsecs.tv_nsec = time_t(nanosec%sec_in_ns);
+
+   nanosleep(&tsecs,nullptr);
    return;
 }
 
@@ -1260,7 +1257,7 @@ void start_detached_thread(void * threadfunc(void *), void * arg)
    {
       err = pthread_create(&pthtid,&pthattr,threadfunc,arg);
       if (! err) return;
-      zsleep(0.001);
+      zsleep(10000000); //10ms
       if (err == EAGAIN) continue;                                               //  this shit happens
       break;
    }
@@ -1283,7 +1280,7 @@ pthread_t start_Jthread(void * threadfunc(void *), void * arg)
    {
       err = pthread_create(&tid, null, threadfunc, arg);
       if (! err) return tid;
-      zsleep(0.001);
+      zsleep(10000000); //10ms
       if (err == EAGAIN) continue;                                               //  this shit happens
       break;
    }
@@ -2007,7 +2004,7 @@ void * cpu_profile_timekeeper(void *)
       gettimeofday(&time1,0);
       cpu_profile_elapsed = time1.tv_sec - time0.tv_sec
               + 0.000001 * (time1.tv_usec - time0.tv_usec);
-      zsleep(0.001);
+      zsleep(10000000); //10ms
       if (cpu_profile_kill) break;
    }
 
@@ -6186,7 +6183,7 @@ void zmainsleep(float secs)
 {
    while (secs > 0) {
       zmainloop();
-      zsleep(0.001);
+      zsleep(10000000); //10ms
       secs = secs - 0.001;
    }
 

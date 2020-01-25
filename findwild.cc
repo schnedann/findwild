@@ -12,7 +12,7 @@
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
    See the GNU General Public License for more details.
 
 ***************************************************************************/
@@ -65,7 +65,7 @@ char        ig_file[Tmax], ig_string[Tmax];                                     
 char        delims[100];                                                         //  string delimiters
 char        date_from[20], date_to[20];                                          //  date range, string format
 time_t      dt_from, dt_to;                                                      //  date range, binary format
-int         Fhits;                                                               //  flag, search prior search hits 
+int         Fhits;                                                               //  flag, search prior search hits
 int         FignorecaseF = 0;                                                    //  flag, ignore case searching files
 int         FignorecaseS = 0;                                                    //  flag, ignore case searching strings
 
@@ -74,7 +74,7 @@ cchar  *mstext[3] = { "any search string", "all search strings",
 
 cchar  *igtext[5] = { "any ignore string", "all ignore strings",
                       "all ignore strings in same record",
-                      "with any ignore string", 
+                      "with any ignore string",
                       "with all ignore strings" };
 
 cchar  defaultdelims[] = " =()[]{}.,;:'<>!-+*/|~`%^&?\\\"";
@@ -94,9 +94,12 @@ char        hitsFile2[1000];                                                    
 char        workbuff[1000];
 char        workbuff2[1000];
 
-
-//  main windowing program
-
+/**
+ * @brief main - main windowing program
+ * @param argc
+ * @param argv
+ * @return
+ */
 int main(int argc, char *argv[])
 {
    appimage_install("findwild");                                                 //  if appimage, menu integration      2.4
@@ -108,11 +111,11 @@ int main(int argc, char *argv[])
    setenv("GTK_THEME","default",0);                                              //  KDE window  manager
 
    gtk_init(&argc, &argv);                                                       //  GTK command line options
-   
+
    zinitapp(findwild_release);                                                   //  set up app directories
-   
+
    zdialog_inputs("load");                                                       //  1.6
-   
+
    if (argc > 1) strncpy0(criteriaFile,argv[1],999);                             //  get opt. command line file
    else *criteriaFile = 0;
 
@@ -120,7 +123,7 @@ int main(int argc, char *argv[])
    gtk_window_set_title(GTK_WINDOW(mWin),findwild_release);
    gtk_window_set_position(GTK_WINDOW(mWin),GTK_WIN_POS_CENTER);
    gtk_window_set_default_size(GTK_WINDOW(mWin),800,400);
-   
+
    mVbox = gtk_box_new(VERTICAL,0);                                              //  vertical packing box
    gtk_container_add(GTK_CONTAINER(mWin),mVbox);                                 //  add to main window
 
@@ -150,52 +153,54 @@ int main(int argc, char *argv[])
    return 0;
 }
 
+/**
+ * @brief initfunc - initial function called from gtk_main() at startup
+ * @param data
+ * @return
+ */
+int initfunc(void * data){
+  int      ii, err;
 
-//  initial function called from gtk_main() at startup
+  *sr_path = 0;
+  *sr_file = 0;
+  *sr_string = 0;
+  *ig_file = 0;
+  *ig_string = 0;
+  strcpy(delims,defaultdelims);
+  *date_from = 0;
+  *date_to = 0;
 
-int initfunc(void * data)
-{
-   int      ii, err;
+  for (ii = 0; ii < Smax; ++ii){
+    srfiles[ii] = 0;
+    srstrings[ii] = 0;
+    igfiles[ii] = 0;
+    igstrings[ii] = 0;
+  }
 
-   *sr_path = 0;
-   *sr_file = 0;
-   *sr_string = 0;
-   *ig_file = 0;
-   *ig_string = 0;
-   strcpy(delims,defaultdelims);
-   *date_from = 0;
-   *date_to = 0;
-   
-   for (ii = 0; ii < Smax; ii++)
-   {
-      srfiles[ii] = 0;
-      srstrings[ii] = 0;
-      igfiles[ii] = 0;
-      igstrings[ii] = 0;
-   }
-   
-   dt_from = dt_to = 0;
+  dt_from = dt_to = 0;
 
-   *hitsFile = 0;                                                                //  set up search hits save file
-   strncatv(hitsFile,999,get_zhomedir(),"/search_hits",null);
-   
-   if (*criteriaFile) {
-      err = load_file2(criteriaFile);                                            //  load command line file
-      if (err) {
-         printf("%s \n %s \n",criteriaFile,strerror(err));
-         *criteriaFile = 0;
-      }
-   }
-   
-   if (! *criteriaFile)
-      strncatv(criteriaFile,999,get_zhomedir(),"/search_criteria",null);
+  *hitsFile = 0;                                                                //  set up search hits save file
+  strncatv(hitsFile,999,get_zhomedir(),"/search_hits",null);
 
-   return 0;
+  if (*criteriaFile) {
+    err = load_file2(criteriaFile);                                            //  load command line file
+    if (err) {
+       printf("%s \n %s \n",criteriaFile,strerror(err));
+       *criteriaFile = 0;
+    }
+  }
+
+  if (! *criteriaFile)
+  strncatv(criteriaFile,999,get_zhomedir(),"/search_criteria",null);
+
+  return 0;
 }
 
-
-//  toolbar button response functions
-
+/**
+ * @brief buttfunc - toolbar button response functions
+ * @param item
+ * @param menu
+ */
 void buttfunc(GtkWidget *item, cchar *menu)
 {
    if (strmatch(menu,"search")) m_search();
@@ -205,57 +210,53 @@ void buttfunc(GtkWidget *item, cchar *menu)
    if (strmatch(menu,"help")) m_help();
    if (strmatch(menu,"stats")) phone_home_allow(mWin);                           //  2.7
    if (strmatch(menu,"quit")) m_quit();
+   return;
 }
 
-
-//  save screen to file
-
-void m_save()
-{
+/**
+ * @brief m_save - save screen to file
+ */
+void m_save(){
    textwidget_save(mLog,MWIN);
    return;
 }
 
-
-//  kill running search
-
-void m_kill()
-{
+/**
+ * @brief m_kill - kill running search
+ */
+void m_kill(){
    textwidget_append2(mLog,0,"kill ... \n");
    killsearch = 1;
    return;
 }
 
-
-//  clear screen
-
-void m_clear()
-{
+/**
+ * @brief m_clear - clear screen
+ */
+void m_clear(){
    textwidget_append2(mLog,0,"clear \n");
-   zsleep(0.1);
+   zsleep(100000000); //100ms
    gtk_text_buffer_set_text(textBuff,"", -1);
    return;
 }
 
-
-//  launch help file in new process
-
-void m_help()
-{
+/**
+ * @brief m_help - launch help file in new process
+ */
+void m_help(){
    showz_docfile(mWin,"userguide",0);
    return;
 }
 
-
-//  exit application
-
+/**
+ * @brief m_quit - exit application
+ */
 void m_quit()
 {
    zdialog_inputs("save");                                                       //  1.6
    gtk_main_quit();
    return;
 }
-
 
 //  build and initiate search dialog
 
@@ -287,7 +288,7 @@ void m_quit()
          |                                                                 |
          |                          [search all] [search hits] [cancel]    |
          |_________________________________________________________________|
-         
+
 ***/
 
 void m_search()
@@ -337,7 +338,7 @@ void m_search()
    zdialog_add_widget(zd,"label","lab_ig_string","vbs11"," ignore string(s)");
    zdialog_add_widget(zd,"label","lab_delims","vbs11","string delimiters");
    zdialog_add_widget(zd,"entry","sr_path","vbs12",0,"expand");
-   zdialog_add_widget(zd,"entry","sr_file","vbs12",0,"expand"); 
+   zdialog_add_widget(zd,"entry","sr_file","vbs12",0,"expand");
    zdialog_add_widget(zd,"entry","sr_string","vbs12",0,"expand");
    zdialog_add_widget(zd,"entry","ig_file","vbs12",0,"expand");
    zdialog_add_widget(zd,"entry","ig_string","vbs12",0,"expand");
@@ -355,7 +356,7 @@ void m_search()
    zdialog_add_widget(zd,"vbox","vblmr2","hblmr");
 
    zdialog_add_widget(zd,"check","list match","vblmr1","list matching records","space=2");
-   
+
    zdialog_add_widget(zd,"hbox","hbt1","vblmr2");
    zdialog_add_widget(zd,"label","lab_lm1","hbt1","with","space=3");
    zdialog_add_widget(zd,"spin","prec","hbt1","0|99|1|0","space=3");
@@ -373,10 +374,10 @@ void m_search()
 
    search_dialog_stuff(zd);                                                      //  search criteria >> dialog_widgets
    zdialog_restore_inputs(zd);                                                   //  restore user inputs                1.6
-   
+
    if (ftf) zdialog_stuff(zd,"delims",defaultdelims);                            //  if app startup, use default delimiters
    ftf = 0;                                                                      //    instead of last-used set         1.9
-   
+
    zdialog_run(zd,search_dialog_event,"parent");                                 //  start dialog (non modal)
    return;
 }
@@ -406,13 +407,13 @@ int search_dialog_event(zdialog *zd, cchar *event)
          return 1;
       }
    }
-   
+
    if (strmatch(event,"search"))
    {                                                                             //  search button
       search_dialog_fetch(zd);                                                   //  dialog widgets >> search criteria
       filescan();                                                                //  start search
    }
-   
+
    if (strmatch(event,"load")) load_file(zd);                                    //  1.2
    if (strmatch(event,"save")) save_file(zd);
 
@@ -454,7 +455,7 @@ void break_criteria(char *string, char *strings[Smax], int &count)
 int search_dialog_stuff(zdialog *zd)
 {
    char  ruleMx[8] = "ruleMx", ruleIx[8] = "ruleIx";
-   
+
    if (! matchrule) matchrule = 1;                                               //  defaults: match any, ignore any
    if (! ignorerule) ignorerule = 1;                                             //  1.5
 
@@ -483,7 +484,7 @@ int search_dialog_fetch(zdialog *zd)
 {
    time_t  search_dialog_fetchdate(cchar *date);
    int      rule;
-   
+
    zdialog_fetch(zd,"ruleM1",rule); if (rule) matchrule = 1;                     //  get match and ignore rules
    zdialog_fetch(zd,"ruleM2",rule); if (rule) matchrule = 2;
    zdialog_fetch(zd,"ruleM3",rule); if (rule) matchrule = 3;
@@ -508,7 +509,7 @@ int search_dialog_fetch(zdialog *zd)
    zdialog_fetch(zd,"list match",listmatch);                                     //  list matching records, yes/no
    zdialog_fetch(zd,"prec",listprec);                                            //  with preceding
    zdialog_fetch(zd,"foll",listfoll);                                            //  with following                     2.1
-   
+
    dt_from = search_dialog_fetchdate(date_from);                                 //  get binary date range
    dt_to = search_dialog_fetchdate(date_to);
 
@@ -531,7 +532,7 @@ time_t search_dialog_fetchdate(cchar *date)
 
    err = convSI(date,days,-9999,0);                                              //  look for -9999 to 0 days ago
    if (err == 0) return now1 + days*24*3600;                                     //  OK, return NOW - seconds ago
-   
+
    pp = strField(date,ddelims,1);                                                //  look for yyyy-mm-dd format
    if (! pp) return 0;
    err = convSI(pp,year,1970,now2.tm_year+1900);                                 //  year, 1970 to current
@@ -564,7 +565,7 @@ void filescan()
    struct tm   dfrom, dto;
    STATB       statf;
    FILE        *fid = null, *fid2;
-   
+
    killsearch = 0;
 
    for (ii = 0; ii < (int) strlen(sr_string); ii++)
@@ -601,12 +602,12 @@ void filescan()
 
    if (FignorecaseF)                                                             //  1.8
       textwidget_append(mLog,0," ignore file case: YES \n");
-   else 
+   else
       textwidget_append(mLog,0," ignore file case: NO \n");
 
    if (FignorecaseS)                                                             //  1.7
       textwidget_append(mLog,0," ignore string case: YES \n");
-   else 
+   else
       textwidget_append(mLog,0," ignore string case: NO \n");
 
    if (dt_from || dt_to) {                                                       //  report date range if defined
@@ -616,12 +617,12 @@ void filescan()
                      dfrom.tm_year+1900, dfrom.tm_mon+1, dfrom.tm_mday,
                      dto.tm_year+1900, dto.tm_mon+1, dto.tm_mday);
    }
-   
+
    textwidget_append2(mLog,0,"\n");                                              //  scroll to end
 
    ccp = strlen(sr_path);
    ccf = strlen(sr_file);
-   
+
    fcount = 0;
 
    if (! ccp) goto search_exit;                                                  //  sanity checks
@@ -634,7 +635,7 @@ void filescan()
    break_criteria(sr_string,srstrings,nsrs);                                     //    search/ignore substrings
    break_criteria(ig_file,igfiles,nigf);
    break_criteria(ig_string,igstrings,nigs);
-   
+
    if (! Fhits)                                                                  //  normal search
    {
       fid = fopen(hitsFile,"w");                                                 //  open output file for search hits
@@ -643,7 +644,7 @@ void filescan()
       for (ii = 0; ii < nsrf; ii++)                                              //  loop all search files
       {
          strcpy(workbuff,sr_path);                                               //  combine pathname/filename to search
-         if (sr_path[ccp-1] == '*' && srfiles[ii][0] == '*') 
+         if (sr_path[ccp-1] == '*' && srfiles[ii][0] == '*')
                strcat(workbuff,srfiles[ii]+1);                                   //  avoid path/**file
          else  strcat(workbuff,srfiles[ii]);
 
@@ -682,7 +683,7 @@ void filescan()
                fprintf(fid,"%s""\n",pfile);                                      //  write matching file to hits list
                fcount++;
             }
-            
+
             if (killsearch) {
                ftf = 2;                                                          //  terminate search
                if (FignorecaseF)                                                 //  1.8
@@ -700,7 +701,7 @@ void filescan()
 
       fclose(fid);
    }
-   
+
    if (Fhits)                                                                    //  search hits (previous files found)
    {
       strcpy(hitsFile2,hitsFile);                                                //  make copy of previous hits file
@@ -713,7 +714,7 @@ void filescan()
 
       fid2 = fopen(hitsFile2,"r");                                               //  open copy for reading previous hits
       if (! fid2) zappcrash("cannot open search_hits input file");
-      
+
       fid = fopen(hitsFile,"w");                                                 //  open hits for output of new hits
       if (! fid) zappcrash("cannot open search_hits output file");
 
@@ -724,7 +725,7 @@ void filescan()
 
          pname = strrchr(pfile,'/') + 1;                                         //  file name part
          stbar_message(stbar,pfile);                                             //  progress tracking in status bar
-         
+
          for (ii = 0; ii < nsrf; ii++)                                           //  check for match with search files
             if (MatchWild(srfiles[ii],pname) == 0) break;                        //  (match file name only)
          if (ii == nsrf) continue;                                               //  no match
@@ -756,7 +757,7 @@ void filescan()
       fclose(fid);
       fclose(fid2);
    }
-   
+
 search_exit:
    if (killsearch) {
       textwidget_append2(mLog,0," *** search killed *** \n");
@@ -778,7 +779,7 @@ int filesearch(cchar *filename)
    void recsearch(char *buff,                                                    //  record to search                   1.5
                   int Rmatch[], int nsrs,                                        //  search strings matched
                   int Rignore[], int nigs,                                       //  ignore strings matched
-                  int &recmatch, int &recignore);                                //  returned total counts 
+                  int &recmatch, int &recignore);                                //  returned total counts
 
    char * recsearch1(char *record,                                               //  record to search                   2.5
                      char *wildstr,                                              //  wildcard string to search for
@@ -793,7 +794,7 @@ int filesearch(cchar *filename)
    int      ii, Nline, Nlistfoll = 0, Fclearprec = 0;
    int      line, cc, pos;
    FILE     *fid;
-   
+
    if (nsrs == 0 && nigs == 0) {                                                 //  no search or ignore strings (matches)
       textwidget_append2(mLog,0," %s \n",filename);                              //  output file name with no record counts
       return 1;
@@ -820,19 +821,19 @@ int filesearch(cchar *filename)
             filematch = 0;                                                       //  reject if any ignore string in record
             break;
          }
-         
+
          if (ignorerule == ignore_rec_all && recignore == nigs) {
             filematch = 0;                                                       //  reject if all ignore strings in record
             break;
          }
       }
-      
+
       if (recmatch > 0) {
          if (matchrule == match_rec_all && recmatch < nsrs) recmatch = 0;        //  ignore record without all match strings
          if (recignore > 0) {
-            if (ignorerule == ignore_match_any) recmatch = 0;                    //  ignore record with any ignore string 
+            if (ignorerule == ignore_match_any) recmatch = 0;                    //  ignore record with any ignore string
             if (ignorerule == ignore_match_all)
-                if (recignore == nigs) recmatch = 0;                             //  ignore record with all ignore strings 
+                if (recignore == nigs) recmatch = 0;                             //  ignore record with all ignore strings
          }
       }
 
@@ -840,7 +841,7 @@ int filesearch(cchar *filename)
          filematch += recmatch;                                                  //  find matches for entire file
          for (ii = 0; ii < nsrs; ii++) Fmatch[ii] += Rmatch[ii];
       }
-      
+
       if (recignore > 0)                                                         //  ignore matches for entire file
          for (ii = 0; ii < nigs; ii++) Fignore[ii] += Rignore[ii];
    }
@@ -850,16 +851,16 @@ int filesearch(cchar *filename)
    if (killsearch) return 0;
 
    if (filematch == 0) return 0;                                                 //  reject file with no match strings
-   
+
    if (ignorerule == ignore_all && nigs > 0) {
       for (ii = 0; ii < nigs; ii++) if (Fignore[ii] == 0) break;                 //  reject files with all ignore strings
       if (ii == nigs) return 0;
    }
-   
+
    if (matchrule == match_all) {
       for (ii = 0; ii < nsrs; ii++) if (Fmatch[ii] == 0) return 0;               //  reject files without all match strings
    }
-   
+
    if (! listmatch) {
       textwidget_append2(mLog,0," %5d %s \n",filematch,filename);                //  output match count and file name
       return filematch;
@@ -872,9 +873,9 @@ int filesearch(cchar *filename)
 
    fid = fopen(filename,"r");                                                    //  open file
    if (! fid) return 0;
-   
+
    Nline = 0;                                                                    //  track line numbers                 2.0
-   
+
    for (ii = 0; ii <= listprec; ii++)                                            //  number preceding recs. to list     1.5
       pbuff[ii] = 0;                                                             //  empty at first
 
@@ -887,21 +888,21 @@ int filesearch(cchar *filename)
 
       for (ii = listprec; ii > 0; ii--)                                          //  save 'listprec' preceding records
          pbuff[ii] = pbuff[ii-1];
-      
+
       pbuff[0] = (char *) zmalloc(1000);                                         //  allocate new buffer
       pp = fgets_trim(pbuff[0],999,fid,1);                                       //  read next record
       if (! pp) break;
-      
+
       Nline++;                                                                   //  track line numbers                 2.0
-      
+
       recsearch(pbuff[0],Rmatch,nsrs,Rignore,nigs,recmatch,recignore);           //  search for match and ignore strings
 
       if (recmatch > 0) {
          if (matchrule == match_rec_all && recmatch < nsrs) recmatch = 0;        //  ignore record without all match strings
          if (recignore > 0) {
-            if (ignorerule == ignore_match_any) recmatch = 0;                    //  ignore record with any ignore string 
+            if (ignorerule == ignore_match_any) recmatch = 0;                    //  ignore record with any ignore string
             if (ignorerule == ignore_match_all)
-                if (recignore == nigs) recmatch = 0;                             //  ignore record with all ignore strings 
+                if (recignore == nigs) recmatch = 0;                             //  ignore record with all ignore strings
          }
       }
 
@@ -913,12 +914,12 @@ int filesearch(cchar *filename)
       }
 
       if (recmatch) {                                                            //  print preceding records            1.5
-         for (ii = listprec; ii > 0; ii--) 
-            if (pbuff[ii]) 
+         for (ii = listprec; ii > 0; ii--)
+            if (pbuff[ii])
                textwidget_append2(mLog,0,"%5d  %s \n",Nline-ii,pbuff[ii]);
          Fclearprec = 1;                                                         //  clear preceding records buffer
       }
-      
+
       if (recmatch)
       {
          textwidget_append2(mLog,0,"%5d  %s \n",Nline,pbuff[0]);                 //  print matching record              2.5
@@ -935,7 +936,7 @@ int filesearch(cchar *filename)
             }
          }
       }
-      
+
       if (recmatch && listprec > 0 && ! listfoll)                                //  add a spacer line if no following  2.1
          textwidget_append2(mLog,0,"\n");                                        //    records are to be listed
 
@@ -945,7 +946,7 @@ int filesearch(cchar *filename)
          if (Nlistfoll == 0) textwidget_append2(mLog,0,"\n");                    //  add a spacer line after following  2.1
          Fclearprec = 1;                                                         //    records are listed
       }
-      
+
       if (Fclearprec) {                                                          //  clear preceding records buffer     2.1
          for (ii = 0; ii <= listprec; ii++) {
             if (pbuff[ii]) zfree(pbuff[ii]);
@@ -969,7 +970,7 @@ int filesearch(cchar *filename)
 void recsearch(char *buff,                                                       //  record to search
                int Rmatch[], int nsrs,                                           //  search strings matched
                int Rignore[], int nigs,                                          //  ignore strings matched
-               int &recmatch, int &recignore)                                    //  returned total counts 
+               int &recmatch, int &recignore)                                    //  returned total counts
 {
    char     buff2[1000], *pp, *token;
    int      ii;
@@ -981,7 +982,7 @@ void recsearch(char *buff,                                                      
 
    recmatch = recignore = 0;
    pp = buff2;
-   
+
    if (FignorecaseS)                                                             //  ignore case option        1.7
    {
       while (true)
@@ -1009,8 +1010,8 @@ void recsearch(char *buff,                                                      
          }
       }
    }
-   
-   else 
+
+   else
    {
       while (true)
       {
@@ -1037,7 +1038,7 @@ void recsearch(char *buff,                                                      
          }
       }
    }
-   
+
    return;
 }
 
@@ -1053,7 +1054,7 @@ char * recsearch1(char *record, char *wildstr, char *delims, int &cc, int ignore
    int      mm;
 
    pp1 = record;
-   
+
    while (true)
    {
       while (*pp1 && strchr(delims,*pp1)) pp1++;                                 //  scan to next non-delimiter
@@ -1084,14 +1085,14 @@ void load_file(zdialog *zd)                                                     
 
    file = zgetfile(dialogtitle,MWIN,"file",criteriaFile);                        //  get input file from user
    if (! file) return;
-   
+
    err = load_file2(file);
    if (err) {
       zmessageACK(mWin,"error %s \n %s",strerror(err), file);
       zfree(file);
       return;
    }
-   
+
    search_dialog_stuff(zd);                                                      //  stuff dialog with search criteria
    return;
 }
@@ -1113,7 +1114,7 @@ int load_file2(cchar *file)                                                     
    {
       pp = fgets_trim(buff,Tmax,fid,1);
       if (! pp) break;
-      
+
       if (strmatchN(pp,"match rule ",11)) matchrule = atoi(pp+11);
       if (strmatchN(pp,"ignore rule ",12)) ignorerule = atoi(pp+12);
       if (strmatchN(pp,"search path ",12)) strcpy(sr_path,pp+12);
@@ -1128,7 +1129,7 @@ int load_file2(cchar *file)                                                     
 
    err = fclose(fid);
    if (err) return errno;
-   
+
    strcpy(criteriaFile,file);                                                    //  update current file
    return 0;
 }
@@ -1147,14 +1148,14 @@ void save_file(zdialog *zd)                                                     
 
    file = zgetfile(dialogtitle,MWIN,"save",criteriaFile);                        //  get output file from user
    if (! file) return;
-   
+
    fid = fopen(file,"w");                                                        //  open for write
    if (! fid) {
       zmessageACK(mWin,"unable to open file %s",file);
       zfree(file);
       return;
    }
-   
+
    fprintf(fid,"match rule %d \n",matchrule);                                    //  write search criteria to file
    fprintf(fid,"ignore rule %d \n",ignorerule);
    fprintf(fid,"search path %s \n",sr_path);
@@ -1166,14 +1167,14 @@ void save_file(zdialog *zd)                                                     
    fprintf(fid,"date from %s \n",date_from);
    fprintf(fid,"date to %s \n",date_to);
    fprintf(fid,"\n");
-   
+
    err = fclose(fid);
    if (err) {
       zmessageACK(mWin,"file I/O error %s",file);
       zfree(file);
       return;
    }
-   
+
    strcpy(criteriaFile,file);                                                    //  update current file
    zfree(file);
 
@@ -1183,7 +1184,7 @@ void save_file(zdialog *zd)                                                     
 
 //  supply unused zdialog callback function
 
-void KBevent(GdkEventKey *event) 
+void KBevent(GdkEventKey *event)
 { return; }
 
 
