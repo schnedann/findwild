@@ -370,12 +370,13 @@ void zexit(cchar *errmess, ...){
 
 void zbacktrace(){
   static constexpr int const listsize = 100;
-   int      nstack = listsize;
-   void     *stacklist[listsize];
 
-   nstack = backtrace(stacklist,nstack);                                                //  get backtrace data
-   backtrace_symbols_fd(stacklist,(nstack>listsize)?(listsize):(nstack),STDOUT_FILENO); //  backtrace records to STDOUT
-   return;
+  int      nstack = listsize;
+  void     *stacklist[listsize];
+
+  nstack = backtrace(stacklist,nstack);                                                //  get backtrace data
+  backtrace_symbols_fd(stacklist,(nstack>listsize)?(listsize):(nstack),STDOUT_FILENO); //  backtrace records to STDOUT
+  return;
 }
 
 
@@ -513,20 +514,20 @@ output:
 
 void catch_signals()
 {
-   void sighandler(int signal);
-   struct sigaction  sigact;
+  void sighandler(int signal);
+  struct sigaction  sigact;
 
-   sigact.sa_handler = sighandler;
-   sigemptyset(&sigact.sa_mask);
-   sigact.sa_flags = 0;
+  sigact.sa_handler = sighandler;
+  sigemptyset(&sigact.sa_mask);
+  sigact.sa_flags = 0;
 
-   sigaction(SIGTERM,&sigact,0);
-   sigaction(SIGSEGV,&sigact,0);
-   sigaction(SIGILL,&sigact,0);                                                  //  man page says cannot be caught
-   sigaction(SIGFPE,&sigact,0);
-   sigaction(SIGBUS,&sigact,0);
-   sigaction(SIGABRT,&sigact,0);                                                 //  heap or stack corruption
-   return;
+  sigaction(SIGTERM,&sigact,0);
+  sigaction(SIGSEGV,&sigact,0);
+  sigaction(SIGILL,&sigact,0);                                                  //  man page says cannot be caught
+  sigaction(SIGFPE,&sigact,0);
+  sigaction(SIGBUS,&sigact,0);
+  sigaction(SIGABRT,&sigact,0);                                                 //  heap or stack corruption
+  return;
 }
 
 
@@ -534,18 +535,18 @@ void catch_signals()
 
 void sighandler(int signal)
 {
-   const char  *signame = "unknown";
+  const char  *signame = "unknown";
 
-   if (signal == SIGTERM) zexit("TERMINATED");
-   if (signal == SIGKILL) zexit("KILLED");
-   if (signal == SIGSEGV) signame = "segment fault";
-   if (signal == SIGILL) signame = "illegal operation";
-   if (signal == SIGFPE) signame = "arithmetic exception";
-   if (signal == SIGBUS) signame = "bus error (bad memory)";
-   if (signal == SIGABRT) signame = "abort";
+  if (signal == SIGTERM) zexit("TERMINATED");
+  if (signal == SIGKILL) zexit("KILLED");
+  if (signal == SIGSEGV) signame = "segment fault";
+  if (signal == SIGILL) signame = "illegal operation";
+  if (signal == SIGFPE) signame = "arithmetic exception";
+  if (signal == SIGBUS) signame = "bus error (bad memory)";
+  if (signal == SIGABRT) signame = "abort";
 
-   zappcrash("fatal signal: %s",signame);
-   exit(0);
+  zappcrash("fatal signal: %s",signame);
+  exit(0);
 }
 
 
@@ -564,72 +565,74 @@ namespace tracenames
    int   ii, ftf = 1;
 };
 
-
-//  Args are source file, source function name, source code line number,
-//  caller address. These all come from the GCC compiler and TRACE macro.
-
+/**
+ * @brief trace - Args are source file, source function name, source code line number,
+ *                caller address. These all come from the GCC compiler and TRACE macro.
+ * @param file
+ * @param func
+ * @param line
+ * @param addr
+ */
 void trace(cchar *file, cchar *func, int line, void *addr)
 {
-   using namespace tracenames;
+  using namespace tracenames;
 
-   if (ftf) {
-      ftf = 0;
-      for (ii = 0; ii < 50; ii++) {
-         filebuff[ii][99] = 0;
-         funcbuff[ii][39] = 0;
-         linebuff[ii] = 0;
-         addrbuff[ii] = 0;
-      }
-      ii = 0;
-   }
+  if (ftf) {
+    ftf = 0;
+    for (ii = 0; ii < 50; ii++) {
+      filebuff[ii][99] = 0;
+      funcbuff[ii][39] = 0;
+      linebuff[ii] = 0;
+      addrbuff[ii] = 0;
+    }
+    ii = 0;
+  }
 
-   if (line == linebuff[ii] &&
-      strmatch(func,funcbuff[ii])) return;                                       //  same as last call, don't duplicate
+  if (line == linebuff[ii] &&
+  strmatch(func,funcbuff[ii])) return;                                       //  same as last call, don't duplicate
 
-   if (++ii > 49) ii = 0;                                                        //  add data to list
-   strncpy(&filebuff[ii][0],file,99);
-   strncpy(&funcbuff[ii][0],func,39);
-   linebuff[ii] = line;
-   addrbuff[ii] = addr;
-   return;
+  if (++ii > 49) ii = 0;                                                     //  add data to list
+  strncpy(&filebuff[ii][0],file,99);
+  strncpy(&funcbuff[ii][0],func,39);
+  linebuff[ii] = line;
+  addrbuff[ii] = addr;
+  return;
 }
 
-
-//  dump trace records to STDOUT
-
+/**
+ * @brief tracedump - dump trace records to STDOUT
+ */
 void tracedump()
 {
-   using namespace tracenames;
+  using namespace tracenames;
 
-   FILE     *fid;
-   int      kk;
+  FILE     *fid;
+  int      kk;
 
-   printz(" *** tracedump *** \n");
+  printz(" *** tracedump *** \n");
 
-   kk = ii;
-   while (linebuff[kk]) {
-      printz("TRACE %s %s %d %p \n",&filebuff[kk][0],
-              &funcbuff[kk][0],linebuff[kk],addrbuff[kk]);
-      if (--kk == ii) break;
-   }
+  kk = ii;
+  while (linebuff[kk]) {
+    printz("TRACE %s %s %d %p \n",&filebuff[kk][0],&funcbuff[kk][0],linebuff[kk],addrbuff[kk]);
+    if (--kk == ii) break;
+  }
 
-   fid = fopen("tracedump","w");
-   if (! fid) {
-      perror("tracedump fopen() failure \n");
-      return;
-   }
+  fid = fopen("tracedump","w");
+  if (! fid) {
+    perror("tracedump fopen() failure \n");
+    return;
+  }
 
-   fprintf(fid, " *** tracedump *** \n");
+  fprintf(fid, " *** tracedump *** \n");
 
-   kk = ii;
-   while (linebuff[kk]) {
-      fprintf(fid, "TRACE %s %s %d %p \n",&filebuff[kk][0],
-                    &funcbuff[kk][0],linebuff[kk],addrbuff[kk]);
-      if (--kk == ii) break;
-   }
+  kk = ii;
+  while (linebuff[kk]) {
+    fprintf(fid, "TRACE %s %s %d %p \n",&filebuff[kk][0],&funcbuff[kk][0],linebuff[kk],addrbuff[kk]);
+    if (--kk == ii) break;
+  }
 
-   fclose(fid);
-   return;
+  fclose(fid);
+  return;
 }
 
 
@@ -691,6 +694,7 @@ int runroot(cchar *command)
 
 double get_seconds()
 {
+
    timespec    time1;
    double      time2;
 
