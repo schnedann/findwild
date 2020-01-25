@@ -385,24 +385,41 @@ void zbacktrace(){
 //  Error message works like printf().
 //  Depends on library program addr2line().
 
-void zappcrash(cchar *format, ... )
-{
+void zappcrash(cchar *format, ... ){
+  static constexpr int const listsize = 100;
+  static constexpr int const buffersize = 300;
+
   static int     crash = 0;
   struct utsname unbuff;
   va_list        arglist;
-  FILE           *fid1, *fid2, *fid3;
-  int            fd, ii, err, cc, nstack = 100;
+  FILE           *fid1;
+  FILE           *fid2;
+  FILE           *fid3;
+  int            fd;
+  int            ii;
+  int            err;
+  int            cc;
+  int            nstack = listsize;
   int            Flinenos = 1;
   void           *stacklist[100];
-  char           OS1[60] = "", OS2[60] = "", OS3[60] = "";
-  char           message[300], progexe[300];
-  char           buff1[300], buff2[300], hexaddr[20];
-  char           *arch, *pp1, *pp2, dlim, *pfunc;
+  char           OS1[60] = "";
+  char           OS2[60] = "";
+  char           OS3[60] = "";
+  char           message[buffersize];
+  char           progexe[buffersize];
+  char           buff1[buffersize];
+  char           buff2[buffersize];
+  char           hexaddr[20];
+  char           *arch;
+  char           *pp1;
+  char           *pp2;
+  char           dlim;
+  char           *pfunc;
 
   if (crash++) return;                                                          //  re-entry or multiple threads crash
 
   va_start(arglist,format);
-  vsnprintf(message,300,format,arglist);
+  vsnprintf(message,buffersize,format,arglist);
   va_end(arglist);
 
   uname(&unbuff);                                                               //  get cpu arch. 32/64 bit
@@ -436,7 +453,7 @@ void zappcrash(cchar *format, ... )
                    arch, OS2, OS3, zappvers, build_date_time, message);
   fprintf(fid2,"*** please send to kornelix@posteo.de *** \n");
 
-  cc = readlink("/proc/self/exe",progexe,300);                                 //  get own program path
+  cc = readlink("/proc/self/exe",progexe,buffersize);                                 //  get own program path
   if (cc > 0) progexe[cc] = 0;                                                 //  readlink() quirk
   else {
     fprintf(fid2,"progexe not available \n");
@@ -452,7 +469,7 @@ void zappcrash(cchar *format, ... )
   for (ii = 0; ii < nstack; ii++)                                              //  loop backtrace records
   {
     pp1 = pp2 = 0;
-    fgets_trim(buff1,300,fid1);                                                //  read backtrace line
+    fgets_trim(buff1,buffersize,fid1);                                                //  read backtrace line
     if (! Flinenos) goto output;
     pfunc = 0;
     pp1 = strstr(buff1,"+0x");                                                 //  new format (+0x12345...)
@@ -466,16 +483,16 @@ void zappcrash(cchar *format, ... )
     *pp2 = 0;
     strncpy0(hexaddr,pp1+1,20);
     *pp2 = dlim;
-    snprintf(buff2,300,"addr2line -i -e %s %s",progexe,hexaddr);               //  convert to source program
+    snprintf(buff2,buffersize,"addr2line -i -e %s %s",progexe,hexaddr);               //  convert to source program
     fid3 = popen(buff2,"r");                                                   //    and line number
     if (! fid3) goto output;
-    pfunc = fgets(buff2,300,fid3);
+    pfunc = fgets(buff2,buffersize,fid3);
     pclose(fid3);
     if (! pfunc) goto output;
     cc = strlen(pfunc);
     if (cc < 10) goto output;
     if (pfunc[cc-1] < ' ') pfunc[cc-1] = 0;                                    //  remove tailing \n if present
-    strncatv(buff1,300,"\n--- ",pfunc,null);
+    strncatv(buff1,buffersize,"\n--- ",pfunc,null);
 output:
     fprintf(fid2,"%s \n",buff1);                                               //  output
   }
