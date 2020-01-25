@@ -12,11 +12,12 @@
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
    See the GNU General Public License for more details.
 
 *********************************************************************************/
 
+#include <cstdint>
 #include <sys/sysinfo.h>
 #include <sys/time.h>
 #include <sys/timeb.h>
@@ -29,8 +30,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/mman.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <ctype.h>
 #include <math.h>
 #include <stdarg.h>
@@ -290,7 +291,7 @@ void appimage_unstall();                                                        
 
 int zinitapp(cchar *appvers, cchar *homedir = 0);                                //  initialize app (appname-N.N, homedir)
 
-cchar * get_zprefix();                                                           //  get /usr or /usr/local  ... 
+cchar * get_zprefix();                                                           //  get /usr or /usr/local  ...
 cchar * get_zhomedir();                                                          //  get /home/user/.appname/
 cchar * get_zdatadir();                                                          //  get data folder
 cchar * get_zimagedir();                                                         //  get image folder
@@ -363,7 +364,7 @@ void textwidget_clear(GtkWidget *widget, int line);                             
 int  textwidget_linecount(GtkWidget *widget);                                          //  get current line count
 void textwidget_append(GtkWidget *widget, int bold, cchar *format, ...);               //  append line
 void textwidget_append2(GtkWidget *widget, int bold, cchar *format, ...);              //  append line and scroll to end
-void textwidget_insert(GtkWidget *widget, int bold, int line, cchar *format, ...);     //  insert line 
+void textwidget_insert(GtkWidget *widget, int bold, int line, cchar *format, ...);     //  insert line
 void textwidget_replace(GtkWidget *widget, int bold, int line, cchar *format, ...);    //  replace line
 void textwidget_delete(GtkWidget *widget, int line);                                   //  delete line
 int  textwidget_find(GtkWidget *widget, char *matchtext, int line1);                   //  find matching line
@@ -373,7 +374,7 @@ void textwidget_scroll_top(GtkWidget *widget, int line);                        
 void textwidget_get_visible_lines(GtkWidget *textwidget, int &top, int &bott);         //  get range of visible lines
 void textwidget_dump(GtkWidget *widget, cchar *filename);                              //  dump all text into a file
 void textwidget_save(GtkWidget *widget, GtkWindow *parent);                            //  same, with save-as dialog
-char * textwidget_line(GtkWidget *widget, int line, int strip);                        //  retrieve line (strip \n) 
+char * textwidget_line(GtkWidget *widget, int line, int strip);                        //  retrieve line (strip \n)
 void textwidget_highlight_line(GtkWidget *widget, int line);                           //  highlight line
 char * textwidget_word(GtkWidget *, int line, int posn, cchar *dlims, char &end);      //  retrieve word
 void textwidget_highlight_word(GtkWidget *widget, int line, int posn, int cc);         //  highlight word
@@ -468,10 +469,10 @@ void Vmenu_block(int flag);                                                     
 /********************************************************************************/
 
 //   functions to implement GTK dialogs with less complexity
-//   widget types: dialog, hbox, vbox, hsep, vsep, frame, scrwin, label, link, 
-//                 entry, edit, text, radio, check, button, togbutt, spin, 
+//   widget types: dialog, hbox, vbox, hsep, vsep, frame, scrwin, label, link,
+//                 entry, edit, text, radio, check, button, togbutt, spin,
 //                 combo, comboE, hscale, vscale, imagebutt, colorbutt, icon, image
-                                            
+
 #define zdmaxwidgets 300
 #define zdmaxbutts 10
 #define zdsentinel 0x97530000
@@ -607,11 +608,11 @@ void popup_report_insert_pixbuf(zdialog *zd, int line, GdkPixbuf *pixbuf);      
 void popup_report_scroll(zdialog *zd, int line);                                       //  scroll to make line visible
 void popup_report_scroll_top(zdialog *zd, int line);                                   //  scroll to put line at top
 void popup_report_get_visible_lines(zdialog *zd, int &top, int &bott);                 //  get visible lines range
-char * popup_report_line(zdialog *zd, int line, int strip);                            //  retrieve line (strip \n) 
+char * popup_report_line(zdialog *zd, int line, int strip);                            //  retrieve line (strip \n)
 char * popup_report_word(zdialog *zd, int line, int posn, cchar *dlims, char &end);    //  retrieve word
 void popup_report_highlight_line(zdialog *zd, int line);                               //  highlight line
 void popup_report_highlight_word(zdialog *zd, int line, int posn, int cc);             //  highlight word
-void popup_report_underline_word(zdialog *zd, int line, int posn, int cc);             //  underline word 
+void popup_report_underline_word(zdialog *zd, int line, int posn, int cc);             //  underline word
 void popup_report_bold_word(zdialog *zd, int line, int posn, int cc);                  //  bold word
 void popup_report_font_attributes(zdialog *zd);                                        //  font attributes for entire report
 void popup_report_close(zdialog *zd, int secs);                                        //  close window after seconds
@@ -627,7 +628,7 @@ int  zmessageYN(GtkWidget *parent, cchar *format, ... );                        
 zdialog * zmessage_post(GtkWidget *, cchar *loc, int s, cchar *f, ...);          //  show message, timeout or cancel
 zdialog * zmessage_post_bold(GtkWidget *, cchar *loc, int s, cchar *f, ...);     //   " " with big red bold font
 char * zdialog_text(GtkWidget *parent, cchar *title, cchar *inittext);           //  get short text input from user
-int  zdialog_choose(GtkWidget *parent, cchar *where, cchar *message, ...);       //  show message, return choice  
+int  zdialog_choose(GtkWidget *parent, cchar *where, cchar *message, ...);       //  show message, return choice
 void poptext_screen(cchar *text, int px, int py, float s1, float s2);            //  show popup text at screen posn
 void poptext_mouse(cchar *text, int dx, int dy, float s1, float s2);             //   " " " at mouse posn + offset
 void poptext_window(GtkWindow *, cchar *tx, int x, int y, float s1, float s2);   //   " " " at window posn + offset

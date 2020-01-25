@@ -13,7 +13,7 @@
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
    See the GNU General Public License for more details.
 
 *********************************************************************************/
@@ -162,7 +162,7 @@
    zdialog_add_widget         add widget to existing zdialog
    zdialog_valid              return 1/0 if zdialog is valid/invalid
    zdialog_widget             get GTK widget from zdialog and widget name
-   zdialog_add_ttip           add a popup tool tip to a zdialog widget       
+   zdialog_add_ttip           add a popup tool tip to a zdialog widget
    zdialog_set_group          set a common group for a set of radio buttons
    zdialog_resize             resize zdialog greater than initial size
    zdialog_set_limits         set new limits for numeric data entry widget
@@ -219,7 +219,7 @@
    zmakecursor             make a cursor from an image file (.png .jpg)
    gdk_pixbuf_rotate       rotate a pixbuf through any angle
    gdk_pixbuf_stripalpha   remove an alpha channel from a pixbuf
-   text_pixbuf             create pixbuf containing text 
+   text_pixbuf             create pixbuf containing text
    move_pointer            move the mouse pointer within a widget/window
 
    C++ Classes
@@ -233,7 +233,6 @@
 
 *********************************************************************************/
 
-
 namespace zfuncs
 {
    struct timeb   startime;                                                      //  app startup time
@@ -241,26 +240,26 @@ namespace zfuncs
    GdkScreen      *screen;                                                       //  screen, N monitors
    GdkDevice      *mouse;                                                        //  pointer device
    GtkSettings    *gtksettings = 0;                                              //  screen settings
-   cchar       *build_date_time = __DATE__ " " __TIME__;                         //  build date and time
-   char        *progexe = 0;                                                     //  executable image file
-   char        *appimagexe = 0;                                                  //  appimage executable image file
-   int         monitor_ww, monitor_hh;                                           //  monitor dimensions
-   int         appfontsize = 10;                                                 //  application font size
-   cchar       *appfont = "sans 10";                                             //  application font defaults
-   cchar       *appboldfont = "sans bold 10";
-   cchar       *appmonofont = "mono 10";
-   cchar       *appmonoboldfont = "mono bold 10";
-   char        zappname[40] = "undefined";                                       //  appname without version
-   char        zappvers[40] = "undefined";                                       //  appname-N.N
-   char        zprefix[200], zdatadir[200], zdocdir[200];                        //  app folders
-   char        zlocalesdir[200], zimagedir[200], zhomedir[200];
-   char        zlocale[8] = "en";                                                //  "lc" or "lc_RC"
-   pthread_t   tid_main = 0;                                                     //  main() thread ID
-   int         vmenuclickposn;                                                   //  Vmenu image click posn. 0-100
-   int         vmenuclickbutton;                                                 //  button: 1/2/3 = L/M/R mouse
-   zdialog     *zdialog_list[zdialog_max];                                       //  active zdialog list
-   int         zdialog_count = 0;                                                //  total zdialogs (new - free)
-   int         zdialog_busy = 0;                                                 //  open zdialogs (run - destroy)
+   cchar          *build_date_time = __DATE__ " " __TIME__;                      //  build date and time
+   char           *progexe = 0;                                                  //  executable image file
+   char           *appimagexe = 0;                                               //  appimage executable image file
+   int            monitor_ww, monitor_hh;                                        //  monitor dimensions
+   int            appfontsize = 10;                                              //  application font size
+   cchar          *appfont = "sans 10";                                          //  application font defaults
+   cchar          *appboldfont = "sans bold 10";
+   cchar          *appmonofont = "mono 10";
+   cchar          *appmonoboldfont = "mono bold 10";
+   char           zappname[40] = "undefined";                                    //  appname without version
+   char           zappvers[40] = "undefined";                                    //  appname-N.N
+   char           zprefix[200], zdatadir[200], zdocdir[200];                     //  app folders
+   char           zlocalesdir[200], zimagedir[200], zhomedir[200];
+   char           zlocale[8] = "en";                                             //  "lc" or "lc_RC"
+   pthread_t      tid_main = 0;                                                  //  main() thread ID
+   int            vmenuclickposn;                                                //  Vmenu image click posn. 0-100
+   int            vmenuclickbutton;                                              //  button: 1/2/3 = L/M/R mouse
+   zdialog        *zdialog_list[zdialog_max];                                    //  active zdialog list
+   int            zdialog_count = 0;                                             //  total zdialogs (new - free)
+   int            zdialog_busy = 0;                                              //  open zdialogs (run - destroy)
 }
 
 using namespace zfuncs;
@@ -276,13 +275,13 @@ void * zmalloc(size_t cc)
 {
    double      memavail, fcc;
    static int  ftf = 1, memcheck = 1;
-   
+
    if (ftf) {                                                                    //  first call
       ftf = 0;
       parseprocfile("/proc/meminfo","MemAvailable:",&memavail,0);                //  'MemAvailable' available?
       if (! memavail) memcheck = 0;                                              //  no, memory check not possible
    }
-   
+
    if (memcheck && cc > 10000)                                                   //  large block
    {
       parseprocfile("/proc/meminfo","MemAvailable:",&memavail,0);                //  free memory (+ cache) KB units
@@ -300,8 +299,8 @@ void * zmalloc(size_t cc)
 
 
 void zfree(void *puser)
-{  
-   return free(puser);  
+{
+   return free(puser);
 }
 
 
@@ -619,7 +618,7 @@ void beroot(int argc, char *argv[])
    char     *args, command[500];
 
    if (getuid() == 0) return;                                                    //  already root
-   
+
    err = Qshell(0,0,"which xhost xterm");                                        //  check for necessary programs
    if (err) zexit("xhost and xterm must be installed");
 
@@ -628,7 +627,7 @@ void beroot(int argc, char *argv[])
 
    args = combine_argvs(argc,argv,0);
    snprintf(command,500,"xterm -fa 'Mono' -fs 15 -geometry 40x5+400+300"         //  start root process
-                                       " -e sudo -b -S %s",args); 
+                                       " -e sudo -b -S %s",args);
    err = Qshell(1,1,command);
 
    exit(err);                                                                    //  exit old process
@@ -668,7 +667,7 @@ double get_seconds()
 {
    timespec    time1;
    double      time2;
-   
+
    clock_gettime(CLOCK_MONOTONIC_RAW,&time1);
    time2 = time1.tv_sec;
    time2 += time1.tv_nsec * 0.000000001;
@@ -813,7 +812,7 @@ double jobtime()
    pp = fgets(buff,200,fid);
    fclose(fid);
    if (! pp) return 0;
-   
+
    parseprocrec(pp,14,&cpu1,15,&cpu2,16,&cpu3,17,&cpu4,null);
    return (cpu1 + cpu2 + cpu3 + cpu4) * jiffy;
 }
@@ -1015,16 +1014,16 @@ int coretemp()
    static char  buff1[200], buff2[200], *ptemp;
    int          temp;
 
-   if (ftf) {                                                                    //  find file "temp1_input" 
-      ftf = 0;                                                                   
-      fid = popen("find /sys/devices/ -name temp1_input","r"); 
+   if (ftf) {                                                                    //  find file "temp1_input"
+      ftf = 0;
+      fid = popen("find /sys/devices/ -name temp1_input","r");
       if (! fid) return 0;
       Tfile = fgets(buff1,200,fid);
       pclose(fid);
       printz("coretemp file: %s \n",Tfile);
    }
-   
-   if (! Tfile) return 0;   
+
+   if (! Tfile) return 0;
    snprintf(buff2,200,"cat %s",Tfile);
    fid = popen(buff2,"r");
    if (! fid) return 0;
@@ -1137,7 +1136,7 @@ void make_global_lockfile(cchar *lockname, char **lockfile)
 int global_lock(cchar *lockfile)
 {
    int       err, fd;
-   
+
    fd = open(lockfile,O_RDWR|O_CREAT,0666);                                      //  open or create the lock file
    if (fd < 0) zappcrash("global_lock() %s",strerror(errno));
 
@@ -1155,7 +1154,7 @@ int global_unlock(int fd, cchar *lockfile)
 {
    int err = close(fd-1);
    if (err < 0) return -1;
-// remove(lockfile);                                                             //  lock/unlock 2.5x faster 
+// remove(lockfile);                                                             //  lock/unlock 2.5x faster
    return 1;
 }
 
@@ -1169,7 +1168,7 @@ int global_unlock(int fd, cchar *lockfile)
 
 mutex_t resource_lock_lock = PTHREAD_MUTEX_INITIALIZER;
 
-int resource_lock(int &resource) 
+int resource_lock(int &resource)
 {
    if (resource) return 0;                                                       //  locked
 
@@ -1240,11 +1239,11 @@ void start_detached_thread(void * threadfunc(void *), void * arg)
    pthread_attr_t pthattr;
    pthread_t      pthtid;
    int            ii, err;
-   
+
    pthread_attr_init(&pthattr);
    pthread_attr_setdetachstate(&pthattr,PTHREAD_CREATE_DETACHED);
 
-   for (ii = 0; ii < 1000; ii++) 
+   for (ii = 0; ii < 1000; ii++)
    {
       err = pthread_create(&pthtid,&pthattr,threadfunc,arg);
       if (! err) return;
@@ -1267,7 +1266,7 @@ pthread_t start_Jthread(void * threadfunc(void *), void * arg)
    pthread_t   tid;
    int         ii, err;
 
-   for (ii = 0; ii < 1000; ii++) 
+   for (ii = 0; ii < 1000; ii++)
    {
       err = pthread_create(&tid, null, threadfunc, arg);
       if (! err) return tid;
@@ -1337,7 +1336,7 @@ void set_cpu_affinity(int cpu)
       ftf = 0;
       Nsmp = get_nprocs();                                                       //  get SMP CPU count
    }
-   
+
    if (cpu >= Nsmp) return;
 
    CPU_ZERO(&cpuset);
@@ -1381,10 +1380,10 @@ int Qshell(int log, int ack, cchar *Fcommand, ...)                              
    va_list     arglist;
    int         ii, cc, cc2, err;
    int         Fthread = 0;
-   
+
    mutex_lock(&lock);                                                            //  block other callers
 
-   for (ii = 0; ii < 10; ii++)                                                      
+   for (ii = 0; ii < 10; ii++)
       if (command[ii] == 0) break;                                               //  find my slot 0-9
    if (ii == 10) zappcrash("Qshell > 10 calls");
 
@@ -1408,7 +1407,7 @@ int Qshell(int log, int ack, cchar *Fcommand, ...)                              
 
    if (Fthread) { while (status[ii] == -1) zsleep(0.01); }                       //  wait for completion - thread
    else { while (status[ii] == -1) zmainsleep(0.01); }                           //   - main
-   
+
    err = status[ii];                                                             //  command status
    if (err == 127) err = 1;                                                      //  "key expired" > "not permitted"
 
@@ -1465,7 +1464,7 @@ char * command_output(int &contx, cchar *command, ...)                          
       va_start(arglist,command);                                                 //  format command
       vsnprintf(buff,9999,command,arglist);
       va_end(arglist);
-      
+
       fid = popen(buff,"r");                                                     //  execute command, output to FID
       if (fid == 0) {
          CO_status[contx] = errno;                                               //  failed to start
@@ -1490,7 +1489,7 @@ int command_status(int contx)                                                   
    return WEXITSTATUS(err);                                                      //  special BS for subprocess
 }
 
-int command_kill(int contx)                                                      //  kill output before completion 
+int command_kill(int contx)                                                      //  kill output before completion
 {
    FILE     *fid;
    if (! CO_contx[contx]) return 0;                                              //  context already closed
@@ -1560,7 +1559,7 @@ char * fgets_trim(char *buff, int maxcc, FILE *fid, int bf)
 //  Both folders must be specified, at least one with ending '/'
 //  (true if a file name is present)
 
-int samefolder(cchar *file1, cchar *file2) 
+int samefolder(cchar *file1, cchar *file2)
 {
    cchar    *p1, *p2;
    int      cc1, cc2, cc;
@@ -1738,7 +1737,7 @@ int copyFile(cchar *sfile, cchar *dfile)
       strcpy(pp2,pp1);
       dfile = dfile2;                                                            //  output file full path
    }
-   
+
    else {                                                                        //  output is a file path
       pp2 = (char *) dfile;
       dlevs = 0;
@@ -1776,7 +1775,7 @@ int copyFile(cchar *sfile, cchar *dfile)
       }
       return 0;
    }
-   
+
    if (strmatch(sfile,dfile)) return 0;                                          //  source and dest files are same
 
    fid1 = open(sfile,O_RDONLY);                                                  //  open input file
@@ -1839,9 +1838,9 @@ int zreaddir(cchar *folder, char **&files)
    int      Nfiles = 0, maxfiles = 100;
    DIR      *direc;
    char     **ufiles, **ufiles2;
-   
+
    files = 0;                                                                    //  nothing returned yet
-   
+
    ufiles = (char **) zmalloc(maxfiles * sizeof(char *));                        //  starting space
 
    direc = opendir(folder);                                                      //  open caller's folder
@@ -1865,11 +1864,11 @@ int zreaddir(cchar *folder, char **&files)
       Nfiles++;
       continue;
    }
-   
+
    closedir(direc);
-   
+
    if (Nfiles > 1) HeapSort(ufiles,Nfiles);                                      //  sort file list
-   
+
    files = ufiles;                                                               //  return allocated file list
    return Nfiles;                                                                //  return file count
 }
@@ -1877,8 +1876,8 @@ int zreaddir(cchar *folder, char **&files)
 
 /********************************************************************************/
 
-//  appimage problem: 
-//    command line args are separated by blanks even for strings enclosed in 
+//  appimage problem:
+//    command line args are separated by blanks even for strings enclosed in
 //    quotes: "aaaa bbbb" becomes two argv[] elements, "aaaa" and "bbbb"
 //    this makes it impossible to get file path args with embedded spaces
 //
@@ -1901,7 +1900,7 @@ char * combine_argvs(int argc, char *argv[], int Nth)
       output[outcc] = ' ';
       outcc++;
    }
-   
+
    outcc--;
    output[outcc] = 0;
    return output;
@@ -1922,7 +1921,7 @@ char * zescape_quotes(cchar *file1)
       return file2;
    }
 
-   file2 = zstrdup(file1,20);   
+   file2 = zstrdup(file1,20);
    repl_1str(file1,file2,"\"","\\\"");
    return file2;
 }
@@ -2126,7 +2125,7 @@ cchar * strField(cchar *string, cchar *delim, int Nth)
       ftf = 0;
       for (ii = 0; ii < 100; ii++) retf[ii] = 0;
    }
-   
+
    pf1 = (char *) string - 1;                                                    //  start parse
    nf = 0;
 
@@ -2903,7 +2902,7 @@ int utf8_position(cchar *utf8in, int Nth)
 
 //  err = zsed(file, string1, string2 ... null)
 //
-//  replace string1/3/5... with string2/4/6... in designated file 
+//  replace string1/3/5... with string2/4/6... in designated file
 //  returns    N  lines changed
 //            -1  file not found
 //            -2  other error (with message)
@@ -2919,7 +2918,7 @@ int zsed(cchar *infile ...)
 
    fid1 = fopen(infile,"r");
    if (! fid1) return -1;
-   
+
    outfile = zstrdup(infile,8);
    strcat(outfile,"-temp");
    fid2 = fopen(outfile,"w");
@@ -2928,7 +2927,7 @@ int zsed(cchar *infile ...)
       zfree(outfile);
       return -2;
    }
-   
+
    nn = 0;
 
    while (true)
@@ -2958,10 +2957,10 @@ int zsed(cchar *infile ...)
       }
 
       va_end(arglist);
-      
+
       fputs(buffout,fid2);
    }
-   
+
    fclose(fid1);
    err = fclose(fid2);
    if (err) {
@@ -2969,9 +2968,9 @@ int zsed(cchar *infile ...)
       zfree(outfile);
       return -2;
    }
-   
+
    rename(outfile,infile);
-   
+
    zfree(outfile);
    return nn;
 }
@@ -2985,13 +2984,13 @@ int zsed(cchar *infile ...)
 const char * zstrstr(const char *haystack, const char *needle)
 {
    if (! needle || ! *needle) return 0;
-   return strstr(haystack,needle);   
+   return strstr(haystack,needle);
 }
 
 const char * zstrcasestr(const char *haystack, const char *needle)
 {
    if (! needle || ! *needle) return 0;
-   return strcasestr(haystack,needle);   
+   return strcasestr(haystack,needle);
 }
 
 
@@ -3045,7 +3044,7 @@ int convSI(cchar *string, int &inum, cchar **delim)                             
 {
    char     *ddelim = 0;
    int      err;
-   
+
    inum = strtol(string,&ddelim,10);                                             //  convert next characters
    if (delim) *delim = ddelim;
    if (ddelim == string) err = 4;                                                //  no valid digits
@@ -3394,7 +3393,7 @@ cchar * SearchWild(cchar *wpath, int &uflag)
          while ((*pp != '/') && (pp > searchpath)) pp--;                         //  /aaa/bbb/cc*cc... >>> /aaa/bbb/
          if (pp > searchpath) *(pp+1) = 0;
       }
-      
+
       snprintf(command,XFCC,"find -L \"%s\" -type f",searchpath);                //  find files (ordinary, symlink)
       fid = popen(command,"r");
       if (! fid) zappcrash(strerror(errno));
@@ -3436,7 +3435,7 @@ cchar * SearchWild(cchar *wpath, int &uflag)
 
 ***/
 
-cchar * SearchWildCase(cchar *wpath, int &uflag) 
+cchar * SearchWildCase(cchar *wpath, int &uflag)
 {
    static FILE    *fid = 0;
    static char    matchfile[XFCC];
@@ -3465,7 +3464,7 @@ cchar * SearchWildCase(cchar *wpath, int &uflag)
          if (pp > searchpath) *(pp+1) = 0;
       }
 
-      snprintf(command,XFCC,"find -L \"%s\" -type f",searchpath);                //  find files (ordinary, symlink) 
+      snprintf(command,XFCC,"find -L \"%s\" -type f",searchpath);                //  find files (ordinary, symlink)
       fid = popen(command,"r");
       if (! fid) zappcrash(strerror(errno));
       uflag = 763568954;                                                         //  begin search
@@ -3496,7 +3495,7 @@ cchar * SearchWildCase(cchar *wpath, int &uflag)
 /********************************************************************************
 
    Find all files matching a given pattern
-   
+
    int zfind(cchar *pattern, char **&flist, int &NF)
 
       pattern     pattern to match, with wildcards
@@ -3506,7 +3505,7 @@ cchar * SearchWildCase(cchar *wpath, int &uflag)
    Returns 0 if OK, +N if error (errno is set).
    flist and flist[*] are subjects for zfree().
 
-   zfind() works for files containing quotes (") 
+   zfind() works for files containing quotes (")
 
 *********************************************************************************/
 
@@ -3709,11 +3708,11 @@ int bsearch(cchar *seekrec, cchar **allrecs, int N, int nrecs)
    void HeapSort(double dlist[], int nn)
    -------------------------------------
    Sort list of nn integers, floats, or doubles.
-   Numbers are sorted in ascending order. 
+   Numbers are sorted in ascending order.
 
    void HeapSort(char *plist[], int nn)
    ------------------------------------
-   Pointers are sorted in order of the strings they point to. 
+   Pointers are sorted in order of the strings they point to.
    The strings are not changed.
 
    void HeapSort(char *plist1[], char *plist2[], int nn)
@@ -4192,16 +4191,16 @@ int zmember(int testval, int matchval1, ...)
 {
    va_list     arglist;
    int         matchval;
-   
+
    va_start(arglist,matchval1);
    matchval = matchval1;
-   
+
    while (matchval)
    {
       if (testval == matchval) break;
       matchval = va_arg(arglist,int);
    }
-   
+
    va_end(arglist);
    return matchval;
 }
@@ -4586,7 +4585,7 @@ void Qtext_close(Qtext *qtext)
       /home/<user>/.local/bin/appname-NN.N-appimage                              //  appimage executable file
       /home/<user>/.local/share/applications/appname.desktop                     //  XDG desktop file
       /home/<user>/.local/share/icons/appname.png                                //  XDG icon file
-   
+
    returns: 1  already done
             2  new desktop file created OK
             3  not an appimage
@@ -4603,7 +4602,7 @@ namespace make_appimage_names
 int appimage_install(cchar *appname)
 {
    using namespace make_appimage_names;
-   
+
    FILE     *fid;
    int      err, cc, nn;
    char     *pp, *homedir;
@@ -4620,13 +4619,13 @@ int appimage_install(cchar *appname)
    pp = strrchr(appimagexe,'/');
    if (! pp) return 4;
    strncpy0(appname1,pp+1,60);                                                   //  appname1: appname-NN.N-appimage
-   
+
    pp = strchr(appname1,'-');
    if (! pp) return 4;
    cc = pp - appname1;
    strncpy(appname2,appname1,cc);                                                //  appname2: appname
    appname2[cc] = 0;
-   
+
    cc = readlink("/proc/self/exe",buff,300);                                     //  get own program path
    if (cc <= 0) return 4;
    buff[cc] = 0;                                                                 //  /tmp/mountpoint/usr/bin/appname
@@ -4659,17 +4658,17 @@ int appimage_install(cchar *appname)
          if (strmatchN(buff,"Exec=",5)) break;                                   //  look for "Exec=[my appimage]"
       }
       fclose(fid);
-      
+
       if (pp) {
          cc = strlen(appimagexe);                                                //  appimage executable file
          nn = strmatchN(appimagexe,buff+5,cc);                                   //  compare to Exec= appimage file
          if (nn) return 1;                                                       //  same, do nothing
       }
    }
-   
+
    err = copyFile(desktopfile1,desktopfile2);                                    //  /home/<user>/.local/share/
    if (err) {                                                                    //    /applications/appname.desktop
-      printz("cannot create %s \n",desktopfile2);                                
+      printz("cannot create %s \n",desktopfile2);
       return 4;
    }
 
@@ -4678,13 +4677,13 @@ int appimage_install(cchar *appname)
       printz("cannot create %s \n",iconfile2);
       return 4;
    }
-   
+
    snprintf(exectext1,100,"Exec=%s",appname2);                                   //  Exec=appname2
    snprintf(exectext2,100,"Exec=%s",appimagexe);                                 //  Exec=appimagexe
 
    snprintf(icontext1,100,"Icon=/usr/share/%s/icons/%s.png",appname2,appname2);
    snprintf(icontext2,100,"Icon=%s",iconfile2);
-   
+
    err = zsed(desktopfile2,exectext1,exectext2,icontext1,icontext2,null);        //  make text substitutions
    if (err < 0) {                                                                //  failure
       printz("cannot update %s \n",desktopfile2);
@@ -4713,21 +4712,21 @@ void appimage_unstall()
    char     *homedir;
    char     desktopfileloc[200];
    char     iconfileloc[200];
-   
+
    if (! appimagexe) {
       printz("not an appimage, nothing was done \n");
       return;
    }
-   
+
    homedir = getenv("HOME");
-   
+
    snprintf(desktopfileloc,200,"%s/.local/share/applications/",homedir);
    snprintf(iconfileloc,200,"%s/.local/share/icons/",homedir);
 
    Qshell(1,1,"rm -f %s/%s.desktop",desktopfileloc,appname2);
    Qshell(1,1,"rm -f %s/%s.png",iconfileloc,appname2);
    Qshell(1,1,"rm -f %s",appimagexe);
-   
+
    zexit("appimage uninstalled");
 }
 
@@ -4748,7 +4747,7 @@ void appimage_unstall()
    zprefix        install location              normally /usr  subdirs: /bin /share /doc
    zdatadir       installed data files          /prefix/share/appname/data/
    zdocdir        documentation files           /prefix/share/doc/appname/
-   zimagedir      images                        /prefix/share/appname/images 
+   zimagedir      images                        /prefix/share/appname/images
    zlocalesdir    translation files             /prefix/share/appname/locales/
    zhomedir       local app files               /home/<user>/.appname
 
@@ -4782,24 +4781,24 @@ int zinitapp(cchar *appvers, cchar *homedir)                                    
    time_t      Tnow;
    STATB       statb;
    FILE        *fid;
-   
+
    ftime(&startime);                                                             //  app startup time
    Tnow = startime.time;
 
    catch_signals();                                                              //  catch signals, do backtrace
 
-   progexe = 0;   
+   progexe = 0;
    cc = readlink("/proc/self/exe",buff,300);                                     //  get own program path
    if (cc > 0) {
       buff[cc] = 0;                                                              //  readlink() quirk
       progexe = zstrdup(buff);
    }
-   
+
    if (appimagexe) printz("program exe: %s \n",appimagexe);
    else printz("program exe: %s \n",progexe);
    printz("build date/time: %s \n",build_date_time);
 
-   strncpy0(zappvers,appvers,40);                                                //  appname-N.N 
+   strncpy0(zappvers,appvers,40);                                                //  appname-N.N
    strncpy0(zappname,appvers,40);                                                //  appneme   without version
    pp = strchr(zappname,'-');
    if (pp && strmatchN(pp,"-maps",5)) pp = strchr(pp+1,'-');                     //  special case fotoxx-maps-N.N
@@ -4810,7 +4809,7 @@ int zinitapp(cchar *appvers, cchar *homedir)                                    
    else
    {
       snprintf(zhomedir,199,"%s/.%s",getenv("HOME"),zappname);                   //  use /home/<user>/.appname
-      snprintf(Phomedir,200,"%s-home",zhomedir);                                 //  check /home/<user>/.appname-home 
+      snprintf(Phomedir,200,"%s-home",zhomedir);                                 //  check /home/<user>/.appname-home
       fid = fopen(Phomedir,"r");
       if (fid) {
          pp = fgets_trim(Phomedir,200,fid);                                      //  if found, read pointer to homedir
@@ -4818,13 +4817,13 @@ int zinitapp(cchar *appvers, cchar *homedir)                                    
          fclose(fid);
       }
    }
-   
+
    printz("%s home: %s \n",zappname,zhomedir);                                   //  forbid space in home folder
    if (strchr(zhomedir,' ')) zexit("home folder name contains a space");
 
    cc = strlen(zhomedir);                                                        //  stop humongous username
    if (cc > 160) zexit("home folder name too big");
-   
+
    err = stat(zhomedir,&statb);                                                  //  does app home exist already?
    if (err) {
       err = mkdir(zhomedir,0750);                                                //  no, create and initialize
@@ -4865,18 +4864,18 @@ int zinitapp(cchar *appvers, cchar *homedir)                                    
    strncatv(zdocdir,199,zprefix,"/share/doc/",zappname,null);                    //  /prefix/share/doc/appname
 
    #ifdef DOCDIR
-      strncpy0(zdocdir,DOCDIR,199);                                              //  flexible DOCDIR location (SUSE) 
+      strncpy0(zdocdir,DOCDIR,199);                                              //  flexible DOCDIR location (SUSE)
    #endif
 
    if (! strmatch(zappname,"fotoxx-maps"))                                       //  omit fotoxx-maps
-      Qshell(0,0,"cp -R -n %s/* %s",zdatadir,zhomedir);                          //  copy MISSING files > user home 
+      Qshell(0,0,"cp -R -n %s/* %s",zdatadir,zhomedir);                          //  copy MISSING files > user home
 
    tid_main = pthread_self();                                                    //  thread ID of main() process
-   
+
    appruns_update();                                                             //  usage statistics
 
    if (! gtk_init_check(0,null)) {                                               //  non GUI jobs exit here
-      printz("gtk_init() not done, zinitapp() return \n");                       //  this does not print (??) FIXME 
+      printz("gtk_init() not done, zinitapp() return \n");                       //  this does not print (??) FIXME
       return 0;
    }
 
@@ -4903,8 +4902,8 @@ int zinitapp(cchar *appvers, cchar *homedir)                                    
    #endif
 
    if (! monitor_ww) zexit("GTK cannot get monitor data");
-   
-   #if GTK_CHECK_VERSION(3,20,0) 
+
+   #if GTK_CHECK_VERSION(3,20,0)
 
    GdkSeat    *gdkseat = 0;                                                      //  screen / KB / pointer associations
    if (screen) gdkseat = gdk_display_get_default_seat(display);                  //  Ubuntu 16.10
@@ -4943,7 +4942,7 @@ void zsetfont(cchar *newfont)
    int      nn, size;
 
    if (! gtksettings) return;
-   
+
    nn = sscanf(newfont,"%s %d",font,&size);                                      //  "sans 11"
    if (nn != 2) {
       nn = sscanf(newfont,"%s %s %d",font,junk,&size);
@@ -5077,7 +5076,7 @@ void showz_logfile(GtkWidget *parent)
 {
    char buff[200];
 
-   fflush(0); 
+   fflush(0);
    snprintf(buff,199,"cat %s/logfile",zhomedir);
    popup_command(buff,800,600,parent);
    return;
@@ -5131,7 +5130,7 @@ void showz_html(cchar *url)
       ftf = 0;
       *prog = 0;
       err = Qshell(0,0,"which firefox");                                         //  use xdg-open only as last resort
-      if (! err) strcpy(prog,"firefox"); 
+      if (! err) strcpy(prog,"firefox");
       else {
          err = Qshell(0,0,"which chromium-browser");
          if (! err) strcpy(prog,"chromium-browser --new-window");
@@ -5155,23 +5154,23 @@ void showz_html(cchar *url)
 /********************************************************************************
 
    void showz_docfile(GtkWidget *parent, char *docfile, char *topic)
-   
+
    Show docfile in popup scrolling text window with 'topic' at the top.
    docfile is located in data folder: get_zdatadir()
-   images are located in image folder: get_zimagedir() 
+   images are located in image folder: get_zimagedir()
 
    docfile format:
 
    plain text file, topics in col. 1, text indented.
    images in a separate line: +image: filename.jpg  +image: ...
    embedded links to topics: |topic name|
-   underlined words: _underline  (underline to next blank) 
+   underlined words: _underline  (underline to next blank)
 
    TOPIC 1                                                              linkable topics in col. 0
-      text text text text text text text text text text text text 
-      text text text text text text text text text text text text 
+      text text text text text text text text text text text text
+      text text text text text text text text text text text text
       ...
-   TOPIC 2  
+   TOPIC 2
       +image: file1.png  +image file2.jpg                               embedded images
 
       text text text text text text text text |TOPIC 1| text text       link to topic
@@ -5179,8 +5178,8 @@ void showz_html(cchar *url)
 
       \_subtopic line                                                   underline total line
       text text text text text text text text text text text text
-      text text text text text \_UNDERLINED TEXT\_ text text text       underline subtext     
-      text text text text text \bBOLD TEXT\b text text text             bold subtext     
+      text text text text text \_UNDERLINED TEXT\_ text text text       underline subtext
+      text text text text text \bBOLD TEXT\b text text text             bold subtext
       text text text text text http*******  text text text              web link
       text text text text text text text text text text text text
       ...
@@ -5207,7 +5206,7 @@ void showz_docfile(GtkWidget *parent, cchar *docfile, cchar *utopic)
 
    void showz_docfile_clickfunc(GtkWidget *widget, int line, int pos, int kbkey);
    void validate_docfile(cchar *docfile);
-   
+
    FILE        *fid;
    char        filespec[200], buff1[200], buff2[200];
    char        topic[50], image[100];
@@ -5216,21 +5215,21 @@ void showz_docfile(GtkWidget *parent, cchar *docfile, cchar *utopic)
    int         Fmarkups;
    GdkPixbuf   *pixbuf;
    GError      *gerror;
-   
+
    if (utopic && strmatch(utopic,"validate")) {                                  //  check for errors
       validate_docfile(docfile);
       return;
    }
-   
+
    if (zd && zdialog_valid(zd,docfile))
       goto initz_done;
-   
-   for (ii = 0; ii < Ntopics; ii++) 
+
+   for (ii = 0; ii < Ntopics; ii++)
       zfree(topicnames[ii]);
-   
+
    for (ii = 0; ii < maxback; ii++)
       backtab[ii] = -1;
-   
+
    currline = lastline = 0;
    Ntopics = 0;
 
@@ -5247,9 +5246,9 @@ void showz_docfile(GtkWidget *parent, cchar *docfile, cchar *utopic)
       fclose(fid);
       return;
    }
-   
+
    zdialog_show(zd,0);
-   
+
    for (line = 0; line < 99999; line++)                                          //  read docfile text lines
    {
       pp1 = fgets_trim(buff1,200,fid);                                           //  line without \n EOL
@@ -5279,7 +5278,7 @@ void showz_docfile(GtkWidget *parent, cchar *docfile, cchar *utopic)
       }
 
       if (buff1[0] > ' ')                                                        //  topic line
-      {      
+      {
          popup_report_write(zd,1,"%s\n",buff1);                                  //  write topic line to output, bold
 
          strncpy0(topic,buff1,50);                                               //  add topic and line number to list
@@ -5308,18 +5307,18 @@ void showz_docfile(GtkWidget *parent, cchar *docfile, cchar *utopic)
       popup_report_write(zd,0,"%s\n",buff2);                                     //  write text line to output
 
       if (! Fmarkups) continue;                                                  //  no markups, next line
-      
+
       //  buff1 = original line with \_ and \b markups
       //  buff2 = buff1 with markups removed
 
       pp1 = buff1;
       remv1 = 0;
 
-      while (true) 
+      while (true)
       {
          pp1 = strchr(pp1,'\\');                                                 //  find next markup "\*"
          if (! pp1) break;
- 
+
          if (pp1[1] != '_') {                                                    //  not underline "\_"
             pp1 += 2;
             remv1 += 2;                                                          //  cc to remove for prior markup
@@ -5352,11 +5351,11 @@ void showz_docfile(GtkWidget *parent, cchar *docfile, cchar *utopic)
       pp1 = buff1;                                                               //  repeat for bold markups "\b"
       remv1 = 0;
 
-      while (true) 
+      while (true)
       {
          pp1 = strchr(pp1,'\\');
          if (! pp1) break;
- 
+
          if (pp1[1] != 'b') {
             pp1 += 2;
             remv1 += 2;
@@ -5399,13 +5398,13 @@ initz_done:
    currline = 0;                                                                 //  docfile line for topic
 
    if (utopic)                                                                   //  initial topic from caller
-   {  
+   {
       strncpy0(topic,utopic,50);
       cc = strlen(topic);
 
       for (ii = 0; ii < cc; ii++)                                                //  conv. topic to uppercase
          topic[ii] = toupper(topic[ii]);
-     
+
       for (ii = 0; ii < Ntopics; ii++) {                                         //  search docfile topics
          if (strcmp(topic,topicnames[ii]) == 0) {
             currline = topiclines[ii];                                           //  get line of matching topic
@@ -5413,12 +5412,12 @@ initz_done:
          }
       }
 
-      if (ii == Ntopics) 
+      if (ii == Ntopics)
          printz("topic not found: %s %s \n",utopic,topic);
    }
-   
+
    popup_report_font_attributes(zd);                                             //  high contrast
-   
+
    popup_report_scroll_top(zd,currline);                                         //  scroll to topic line
    textwidget = zdialog_widget(zd,"text");                                       //  text widget in zdialog
    zdialog_show(zd,1);
@@ -5430,20 +5429,20 @@ initz_done:
 void showz_docfile_clickfunc(GtkWidget *textwidget, int line, int pos, int kbkey)
 {
    using namespace showz_docfile_names;
-   
+
    int      ii, jj, cc;
    int      top, bott, page;
    char     *text, *pp1, *pp2;
    char     topic[50], weblink[200];
-   
+
    textwidget_get_visible_lines(textwidget,top,bott);                            //  range of lines on screen
 
    if (line >= 0 || kbkey == GDK_KEY_Return)                                     //  line clicked or ENTER key at line
    {
       text = textwidget_line(textwidget,line,1);                                 //  selected line
-      if (text) 
+      if (text)
       {
-         pp2 = strchr(text + pos,'|');                                              
+         pp2 = strchr(text + pos,'|');
          if (pp2) {                                                              //  link to topic found
             for (ii = 2; ii < 50; ii++)
                if (pp2[-ii] == '|') break;                                       //  text ... |topic name| ...
@@ -5469,7 +5468,7 @@ void showz_docfile_clickfunc(GtkWidget *textwidget, int line, int pos, int kbkey
                }
             }
          }
-         
+
          else {                                                                  //  look for web link
             for ( ; pos >= 0; pos--)
                if ( *(text+pos) == ' ') break;                                   //  click position, preceding blank
@@ -5511,7 +5510,7 @@ void showz_docfile_clickfunc(GtkWidget *textwidget, int line, int pos, int kbkey
       textwidget_scroll_top(textwidget,currline);                                //  scroll line to top of window
       return;
    }
-   
+
    if (kbkey == GDK_KEY_Right || kbkey == '>') {                                 //  right arrow, go forward
       backtab[backpos] = currline;
       if (backpos < maxback-1 && backtab[backpos+1] >= 0)
@@ -5528,7 +5527,7 @@ void showz_docfile_clickfunc(GtkWidget *textwidget, int line, int pos, int kbkey
 
 void validate_docfile(cchar *docfile)
 {
-   char        *textlines[10000]; 
+   char        *textlines[10000];
    char        *topicnames[1000];
    char        filespec[200], buff[200], image[100];
    char        topic[50];
@@ -5538,9 +5537,9 @@ void validate_docfile(cchar *docfile)
    int         ii, cc, line;
    GdkPixbuf   *pixbuf;
    GError      *gerror;
-   
+
    printz("validate docfile %s \n",docfile);
-   
+
    Ntext = Ntopics = Nerrs = 0;
 
    snprintf(filespec,200,"%s/%s",get_zdatadir(),docfile);                        //  open docfile
@@ -5570,12 +5569,12 @@ void validate_docfile(cchar *docfile)
 
    for (line = 0; line < Ntext; line++)                                          //  process text lines
    {
-      pp1 = textlines[line]; 
-      
+      pp1 = textlines[line];
+
       pp2 = strstr(pp1,"+image:");
       if (pp2)                                                                   //  line contains images
       {
-         while (pp2) 
+         while (pp2)
          {
             pp3 = strstr(pp2+7,"+image:");                                       //  next image file
             if (pp3) *pp3 = 0;
@@ -5610,7 +5609,7 @@ void validate_docfile(cchar *docfile)
                Nerrs++;
                break;
             }
-            
+
             strncpy0(topic,pp1,cc+1);
             for (ii = 0; ii < Ntopics; ii++)
                if (strcmp(topic,topicnames[ii]) == 0) break;
@@ -5618,21 +5617,21 @@ void validate_docfile(cchar *docfile)
                printf("bad topic, line %d: %s \n",line,topic);
                Nerrs++;
             }
-            pp1 = strchr(pp2+1,'|'); 
+            pp1 = strchr(pp2+1,'|');
          }
 
          continue;                                                               //  next line
       }
    }
-   
+
    printz(" %d errors \n",Nerrs);
-   
+
    for (ii = 0; ii < Ntext; ii++)                                                //  free memory
       zfree(textlines[ii]);
 
    for (ii = 0; ii < Ntopics; ii++)
       zfree(topicnames[ii]);
-   
+
    return;
 }
 
@@ -5643,7 +5642,7 @@ void validate_docfile(cchar *docfile)
 
    Called at each application startup.
    Update appruns file if >1 day since last update.
-   Also do phone_home() if user allows this. 
+   Also do phone_home() if user allows this.
 
    appruns file:  Uxxxxxxxx Rxxx Px
                    |         |    |___ phone home permission: 0/1 = no/yes
@@ -5670,14 +5669,14 @@ void appruns_update()
       today = time(0);
       fage = (today - mtime) / 3600;                                             //  file age in hours
    }
-   
+
    fid = fopen(apprunsfile,"r");                                                 //  open appruns file
    if (fid) {
       nn = fscanf(fid,"U%8s R%d P%d",uuid,&runs,&permit);                        //  read "Uxxxxxxxx Rxxx Px"
       fclose(fid);
       if (nn != 3) fid = 0;                                                      //  failed
    }
-   
+
    if (fid && fage < 24) return;                                                 //  < 1 day since last update
 
    if (! fid) {                                                                  //  appruns not found or invalid
@@ -5693,7 +5692,7 @@ void appruns_update()
    if (! fid) return;
    fprintf(fid,"U%8s R%d P%d",uuid,runs,permit);
    fclose(fid);
-   
+
    if (! permit) return;                                                         //  phone home blocked
    if (runs == 1) return;                                                        //  not if first run
    phone_home();                                                                 //  do phone home
@@ -5703,9 +5702,9 @@ void appruns_update()
 
 /********************************************************************************/
 
-//  Send a log message to web host for application usage statistics. 
-//  No data tracable to a person, computer, or location is sent. 
-//  The IP address can be traced by a state actor (like any internet access). 
+//  Send a log message to web host for application usage statistics.
+//  No data tracable to a person, computer, or location is sent.
+//  The IP address can be traced by a state actor (like any internet access).
 
 void phone_home()
 {
@@ -5716,7 +5715,7 @@ void phone_home()
 
    cchar *wget1 = "wget -b -q -O /dev/null %s 1>/dev/null";                      //  stuff wget2
    cchar *wget2 = "https://kornelix.net/phone_home/%s/%s/";                      //  stuff appname, uuid
-   
+
    snprintf(apprunsfile,200,"%s/appruns",get_zhomedir());
    fid = fopen(apprunsfile,"r");                                                 //  open appruns file
    if (! fid) return;
@@ -5766,14 +5765,14 @@ void phone_home_allow(GtkWidget *parent)
       fclose(fid);
       if (nn != 3) fid = 0;                                                      //  failed
    }
-   
+
    if (! fid) {                                                                  //  appruns not found or invalid
       random = 0x100000000 * drandz();                                           //  random 8-digit hex number
       snprintf(uuid,12,"%08llx",random);                                         //  (range 4.2 billion)
       runs = 0;                                                                  //  run count
       permit = 1;                                                                //  permit phone home
    }
-   
+
    if (zstat == 2) permit = 0;
    else permit = 1;
 
@@ -5781,7 +5780,7 @@ void phone_home_allow(GtkWidget *parent)
    if (! fid) return;
    fprintf(fid,"U%8s R%d P%d",uuid,runs,permit);
    fclose(fid);
-   
+
    if (permit) phone_home();                                                     //  phone home if allowed
    return;
 }
@@ -5928,14 +5927,14 @@ void E2Xinit(cchar *locale, int Fdump)                                          
       ltime = statb.st_mtime;
       if (ltime >= itime) usepo = localpo;                                       //  use local .po if newer
    }
-   
+
    pp = strstr(usepo,".gz");                                                     //  uncompress if needed
    if (pp) {
       printz("uncompress installed .po file \n");
       err = Qshell(1,1,"gunzip -c %s > %s",installpo,localpo);                   //  /usr/share/fotoxx/locale/translate-xx.po.gz
       usepo = localpo;                                                           //    >>  <fotoxx home>/translate-xx.po
    }
-   
+
    if (usepo) printz("using translation file: %s \n",usepo);
    else return;
 
@@ -6162,7 +6161,7 @@ void zmainloop(int skip)
    if (! pthread_equal(pthread_self(),zfuncs::tid_main)) return;                 //  thread caller, do nothing
 
    while (gtk_events_pending())                                                  //  gdk_flush() removed
-      gtk_main_iteration_do(0);                                                  //  use gtk_main_iteration_do 
+      gtk_main_iteration_do(0);                                                  //  use gtk_main_iteration_do
 
    return;
 }
@@ -6177,14 +6176,14 @@ void zmainsleep(float secs)
       zsleep(0.001);
       secs = secs - 0.001;
    }
-   
+
    return;
 }
 
 
 /********************************************************************************/
 
-//  cairo drawing context for GDK window       GTK 3.21 version 
+//  cairo drawing context for GDK window       GTK 3.21 version
 
 #if GTK_CHECK_VERSION(3,22,0)
 
@@ -6218,7 +6217,7 @@ cairo_t * draw_context_create(GdkWindow *gdkwin, draw_context_t &context)
 {
    if (context.dcr) zappcrash("draw_context_create(): nested call");
    context.dcr = gdk_cairo_create(gdkwin);
-   if (! context.dcr) 
+   if (! context.dcr)
       zappcrash("draw_context_create(): gdk_cairo_create() failed");
    return context.dcr;
 }
@@ -6250,7 +6249,7 @@ void draw_context_destroy(draw_context_t &context)
 void textwidget_clear(GtkWidget *textwidget)
 {
    GtkTextBuffer  *textBuff;
-   
+
    textBuff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textwidget));
    if (! textBuff) return;
    gtk_text_buffer_set_text(textBuff,"",-1);
@@ -6320,7 +6319,7 @@ void textwidget_append(GtkWidget *textwidget, int bold, cchar *format, ...)
 }
 
 
-//  same as above, with scroll to last line added (slower) 
+//  same as above, with scroll to last line added (slower)
 
 void textwidget_append2(GtkWidget *textwidget, int bold, cchar *format, ...)
 {
@@ -6374,10 +6373,10 @@ void textwidget_insert(GtkWidget *textwidget, int bold, int line, cchar *format,
    va_start(arglist,format);
    vsnprintf(textline,1999,format,arglist);
    va_end(arglist);
-   
+
    textBuff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textwidget));
    if (! textBuff) return;
-   
+
    if (line < 0) gtk_text_buffer_get_start_iter(textBuff,&iter);                 //  insert before line 0
 
    if (line >= 0) {
@@ -6475,10 +6474,10 @@ int textwidget_find(GtkWidget *textwidget, char *matchtext, int line1)
 
    textBuff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textwidget));
    if (! textBuff) return -1;
-   
+
    nlines = gtk_text_buffer_get_line_count(textBuff);                            //  lines now in buffer
    if (! nlines) return -1;
-   
+
    if (line1 < 0) line1 = 0;                                                     //  starting line to search
    if (line1 >= nlines) line1 = 0;
    line = line1;
@@ -6498,9 +6497,9 @@ int textwidget_find(GtkWidget *textwidget, char *matchtext, int line1)
       if (line == nlines) line = 0;
       if (line == line1) return -1;                                              //  wrapped around, not found
    }
-   
+
    cc = strlen(matchtext);                                                       //  highlight matching text
-   pp2 = pp1 + cc - 1;      
+   pp2 = pp1 + cc - 1;
    gtk_text_buffer_get_iter_at_line_index(textBuff,&iter1,line,pp1-textline);
    gtk_text_buffer_get_iter_at_line_index(textBuff,&iter2,line,pp2-textline+1);
    gtk_text_buffer_select_range(textBuff,&iter1,&iter2);
@@ -6546,15 +6545,15 @@ void textwidget_scroll(GtkWidget *textwidget, int line)
    if (! textBuff) return;
 
    vadjust = gtk_scrollable_get_vadjustment(GTK_SCROLLABLE(textwidget));
-   
+
    if (line < 0) {                                                               //  bottom
       upperlimit = gtk_adjustment_get_upper(vadjust);                            //  does not work within a zdialog FIXME
       gtk_adjustment_set_value(vadjust,upperlimit);
    }
-   
+
    else {
       gtk_text_buffer_get_iter_at_line(textBuff,&iter,line);
-      mark = gtk_text_buffer_create_mark(textBuff,0,&iter,0); 
+      mark = gtk_text_buffer_create_mark(textBuff,0,&iter,0);
       gtk_text_view_scroll_mark_onscreen(GTK_TEXT_VIEW(textwidget),mark);
    }
 
@@ -6573,7 +6572,7 @@ void textwidget_scroll_top(GtkWidget *textwidget, int line)
    textBuff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textwidget));
    if (! textBuff) return;
    gtk_text_buffer_get_iter_at_line(textBuff,&iter,line);
-   mark = gtk_text_buffer_create_mark(textBuff,0,&iter,0); 
+   mark = gtk_text_buffer_create_mark(textBuff,0,&iter,0);
    gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(textwidget),mark,0,1,0,0);
 
    return;
@@ -6652,10 +6651,10 @@ char * textwidget_line(GtkWidget *textwidget, int line, int strip)
 
    textBuff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textwidget));
    if (! textBuff) return 0;
-   
+
    nlines = gtk_text_buffer_get_line_count(textBuff);                            //  lines now in buffer
    if (line < 0 || line >= nlines) return 0;
-   
+
    gtk_text_buffer_get_iter_at_line(textBuff,&iter1,line);                       //  line start
    iter2 = iter1;
    gtk_text_iter_forward_line(&iter2);                                           //  end
@@ -6681,10 +6680,10 @@ void textwidget_highlight_line(GtkWidget *textwidget, int line)
 
    textBuff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textwidget));
    if (! textBuff) return;
-   
+
    nlines = gtk_text_buffer_get_line_count(textBuff);                            //  lines now in buffer
    if (line < 0 || line >= nlines) return;
-   
+
    gtk_text_buffer_get_iter_at_line(textBuff,&iter1,line);                       //  line start
    iter2 = iter1;
    gtk_text_iter_forward_line(&iter2);                                           //  end
@@ -6702,7 +6701,7 @@ char * textwidget_word(GtkWidget *textwidget, int line, int posn, cchar *dlims, 
    GtkTextBuffer  *textBuff;
    char           *txline, *pp1, *pp2, *ztext;
    int            pos, cc;
-   
+
    textBuff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textwidget));
    if (! textBuff) return 0;
 
@@ -6736,7 +6735,7 @@ void textwidget_highlight_word(GtkWidget *textwidget, int line, int posn, int cc
    GtkTextBuffer  *textBuff;
    GtkTextIter    iter1, iter2;
    char           *txline, *pp1, *pp2;
-   
+
    textBuff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textwidget));
    if (! textBuff) return;
 
@@ -6763,7 +6762,7 @@ void textwidget_bold_word(GtkWidget *textwidget, int line, int posn, int cc)
    GtkTextTag     *fontag = 0;
    cchar          *boldfont = zfuncs::appmonoboldfont;
    char           *txline, *pp1, *pp2;
-   
+
    textBuff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textwidget));
    if (! textBuff) return;
 
@@ -6776,7 +6775,7 @@ void textwidget_bold_word(GtkWidget *textwidget, int line, int posn, int cc)
    fontag = gtk_text_buffer_create_tag(textBuff,0,"font",boldfont,               //  example
                        "foreground","red","background","light blue",0);
    ***/
-   
+
    pp1 = txline + posn;
    pp2 = pp1 + cc - 1;
    gtk_text_buffer_get_iter_at_line_index(textBuff,&iter1,line,pp1-txline);
@@ -6796,7 +6795,7 @@ void textwidget_underline_word(GtkWidget *textwidget, int line, int posn, int cc
    GtkTextIter    iter1, iter2;
    GtkTextTag     *fontag = 0;
    char           *txline, *pp1, *pp2;
-   
+
    textBuff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textwidget));
    if (! textBuff) return;
 
@@ -6823,7 +6822,7 @@ void textwidget_font_attributes(GtkWidget *textwidget)
    GtkTextBuffer  *textBuff;
    GtkTextIter    iter1, iter2;
    GtkTextTag     *fontag = 0;
-   
+
    textBuff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textwidget));
    if (! textBuff) return;
 
@@ -6850,7 +6849,7 @@ void textwidget_font_attributes(GtkWidget *textwidget)
 void textwidget_set_eventfunc(GtkWidget *textwidget, textwidget_callbackfunc_t userfunc)
 {
    int textwidget_eventfunc(GtkWidget *textwidget, GdkEvent *event, textwidget_callbackfunc_t userfunc);
-   
+
    gtk_widget_add_events(textwidget,GDK_BUTTON_PRESS_MASK);
    gtk_widget_add_events(textwidget,GDK_KEY_PRESS_MASK);
    gtk_widget_add_events(textwidget,GDK_POINTER_MOTION_MASK);
@@ -6878,7 +6877,7 @@ int textwidget_eventfunc(GtkWidget *textwidget, GdkEvent *event, textwidget_call
    GtkTextIter       iter1;
    int               mpx, mpy, tbx, tby;
    int               line, pos, top, bott, page, KBkey;
-   
+
    if (! arrowcursor)                                                            //  first call, get arrow cursor
       arrowcursor = gdk_cursor_new_for_display(display,GDK_TOP_LEFT_ARROW);
    gdkwin = gtk_text_view_get_window(VIEW(textwidget),TEXT);                     //  set arrow cursor for window
@@ -6889,7 +6888,7 @@ int textwidget_eventfunc(GtkWidget *textwidget, GdkEvent *event, textwidget_call
    if (event->type == GDK_KEY_PRESS)                                             //  KB key press event
    {
       KBkey = ((GdkEventKey *) event)->keyval;
-      
+
       if (userfunc) {
          userfunc(textwidget,-1,-1,KBkey);
          return 1;
@@ -6913,13 +6912,13 @@ int textwidget_eventfunc(GtkWidget *textwidget, GdkEvent *event, textwidget_call
 
       return 1;
    }
-   
+
    if (! userfunc) return 1;
 
    if (event->type == GDK_BUTTON_PRESS) {                                        //  mouse button press
       mpx = int(((GdkEventButton *) event)->x);                                  //  mouse click position
       mpy = int(((GdkEventButton *) event)->y);
-      mpx -= appfontsize / 2;                                                    //  more accurate 
+      mpx -= appfontsize / 2;                                                    //  more accurate
       if (mpx < 0) mpx = 0;
       gtk_text_view_window_to_buffer_coords(VIEW(textwidget),TEXT,mpx,mpy,&tbx,&tby);
       if (tbx && tby) {                                                          //  can happen
@@ -6931,7 +6930,7 @@ int textwidget_eventfunc(GtkWidget *textwidget, GdkEvent *event, textwidget_call
       userfunc(textwidget,line,pos,-1);                                          //  pass line and posn to user func
       return 1;
    }
-   
+
    return 1;
 }
 
@@ -7147,7 +7146,7 @@ int stbar_message(GtkWidget *wstbar, cchar *message)
 
    Customizable Graphic Popup Menu
 
-   void Gmenuz(GtkWidget *parent, cchar *configfile, callbackfunc) 
+   void Gmenuz(GtkWidget *parent, cchar *configfile, callbackfunc)
 
    Open a popup window with a customizable graphic menu.
       parent         parent window or null
@@ -7227,7 +7226,7 @@ namespace gmenuznames
       PIXBUF      *pixbuf;                                                       //  icon pixbuf or null
       int         size;                                                          //  icon size or zero
       int         kill;                                                          //  kill popup window when menu used
-      int         Fnewicon;                                                      //  flag, icon was changed 
+      int         Fnewicon;                                                      //  flag, icon was changed
    };
    menuent     menus[maxME];                                                     //  menu entries
    int         NME = 0;                                                          //  entry count
@@ -7286,7 +7285,7 @@ void Gmenuz(GtkWidget *parent, cchar *title, cchar *ufile, gmenuznames::callback
    *(pp+1) = 0;
    mdcc = strlen(menudir);
    if (mdcc > 190) zappcrash("Gmenuz() too big: %s",menufile);
-   
+
    gmenucallback = ufunc;                                                        //  get user callback function
 
    NME = 0;
@@ -7330,7 +7329,7 @@ void Gmenuz(GtkWidget *parent, cchar *title, cchar *ufile, gmenuznames::callback
                menus[me].menu = zstrdup(pp+5);                                   //  get menu text
             else menus[me].menu = 0;
          }
-         
+
          if (strmatchN(pp,"bold",4))                                             //  bold text
             menus[me].bold = 1;
 
@@ -7342,7 +7341,7 @@ void Gmenuz(GtkWidget *parent, cchar *title, cchar *ufile, gmenuznames::callback
          if (strmatchN(pp,"icon ",5)) {                                          //  menu icon file  NNN.png
             pp += 5;
             if (*pp) {                                                           //  icon file present
-               if (*pp == '/') {                                                 //  old style icon file /.../filename.png 
+               if (*pp == '/') {                                                 //  old style icon file /.../filename.png
                   menus[me].Fnewicon = 1;                                        //  new icon is needed
                   Fchanged = 1;
                   gerror = 0;
@@ -7384,7 +7383,7 @@ void Gmenuz(GtkWidget *parent, cchar *title, cchar *ufile, gmenuznames::callback
 
    if (! pWin) {                                                                 //  no parent window
       pposx = pposy = 0;
-      gtk_window_set_focus_on_map(GTK_WINDOW(mWin),1);                           //  put on top when created 
+      gtk_window_set_focus_on_map(GTK_WINDOW(mWin),1);                           //  put on top when created
    }
    else {
       gtk_window_get_position(GTK_WINDOW(pWin),&pposx,&pposy);                   //  parent window position (NW corner)
@@ -7405,7 +7404,7 @@ void Gmenuz(GtkWidget *parent, cchar *title, cchar *ufile, gmenuznames::callback
    G_SIGNAL(mWin,"destroy",quit,0);                                              //  connect signals to windows
    G_SIGNAL(mWin,"delete-event",quit,0);
    G_SIGNAL(mWin,"notify",resize,0);
-   G_SIGNAL(mWin,"configure-event",resize,0);                                    //  GTK 3.18 API changed 
+   G_SIGNAL(mWin,"configure-event",resize,0);                                    //  GTK 3.18 API changed
    G_SIGNAL(mWin,"key-press-event",KB_event,0);                                  //  connect KB key event
    G_SIGNAL(layout,"draw",wpaint,0);
 
@@ -7416,12 +7415,12 @@ void Gmenuz(GtkWidget *parent, cchar *title, cchar *ufile, gmenuznames::callback
    G_SIGNAL(layout,"button-press-event",mouse_event,0);
    G_SIGNAL(layout,"button-release-event",mouse_event,0);
    G_SIGNAL(layout,"motion-notify-event",mouse_event,0);
-   
+
    drag_drop_dest(mWin,drag_drop_event);
 
    gtk_widget_show_all(mWin);                                                    //  show all widgets
 
-   zmainloop();                                                                  //  after initial window events 
+   zmainloop();                                                                  //  after initial window events
    Fchanged = 0;                                                                 //  no changes yet
    Fpopquit = 0;                                                                 //  not being closed
    Fpopbusy = 1;
@@ -7486,20 +7485,20 @@ void gmenuznames::resize()
    using namespace gmenuznames;
 
    int            xx, yy, ww, hh;
-   
+
    if (Fpopquit) return;                                                         //  ignore bogus call when killed
 
    gtk_window_get_position(GTK_WINDOW(mWin),&xx,&yy);
    gtk_window_get_size(GTK_WINDOW(mWin),&ww,&hh);
-   
+
    if (xx != winposx || yy != winposy) Fchanged = 1;                             //  window size or position changed
    if (ww != winww || hh != winhh) Fchanged = 1;
-   
+
    winposx = xx;                                                                 //  save window position
    winposy = yy;
    winww = ww;                                                                   //  save new size
    winhh = hh;
-   
+
    return;
 }
 
@@ -7515,7 +7514,7 @@ void gmenuznames::quit()
    Fpopbusy = 0;
    if (Fchanged) update_configfile();
    gtk_widget_destroy(mWin);
-   gmenucallback("quit");                                                        //  inform host program 
+   gmenucallback("quit");                                                        //  inform host program
    return;
 }
 
@@ -7534,13 +7533,13 @@ void gmenuznames::update_configfile()
    FILE           *fid;
    STATB          statb;
    GError         *gerror;
-   
+
    if (ftf) {                                                                    //  initialize random generator
       ftf = 0;
       DT = time(null);
       drandz(&DT);
    }
-   
+
    if (pWin)
       gtk_window_get_position(GTK_WINDOW(pWin),&pposx,&pposy);                   //  parent window position (may have moved)
    else pposx = pposy = 0;
@@ -7550,7 +7549,7 @@ void gmenuznames::update_configfile()
 
    fid = fopen(menufile,"w");                                                    //  open for write
    if (! fid) {
-      zmessageACK(mWin," %s \n %s",menufile,strerror(errno));                    //  diagnose permissions error 
+      zmessageACK(mWin," %s \n %s",menufile,strerror(errno));                    //  diagnose permissions error
       return;
    }
 
@@ -7569,14 +7568,14 @@ void gmenuznames::update_configfile()
 
       if (menus[me].menu)                                                        //  menu text
          fprintf(fid,"menu %s \n",menus[me].menu);
-      
-      if (menus[me].bold)                                                        //  bold text flag 
+
+      if (menus[me].bold)                                                        //  bold text flag
          fprintf(fid,"bold \n");
-      
+
       if (menus[me].func)                                                        //  menu function (text)
          fprintf(fid,"func %s \n",menus[me].func);
 
-      if (menus[me].pixbuf) {                                                    //  menu icon 
+      if (menus[me].pixbuf) {                                                    //  menu icon
          if (menus[me].Fnewicon) {                                               //  new or changed icon
             strncpy0(iconfile,menudir,200);                                      //  menu file folder
             pp = iconfile + mdcc;                                                //  pp --> NNN.png
@@ -7591,7 +7590,7 @@ void gmenuznames::update_configfile()
             else fprintf(fid,"icon %s \n",pp);                                   //  file name is NNN.png
             menus[me].icon = zstrdup(pp);
             menus[me].Fnewicon = 0;
-         }            
+         }
          else if (menus[me].icon)                                                //  no change
             fprintf(fid,"icon %s \n",menus[me].icon);
       }
@@ -7864,7 +7863,7 @@ int gmenuznames::edit_menu_event(zdialog *zd, cchar *event)
    PIXBUF      *pixbuf;
    GError      *gerror;
    GtkWindow   *parent = GTK_WINDOW(zd->dialog);
-   
+
    if (strmatch(event,"browse")) {                                               //  browse for icon file
       pp = zgetfile(E2X("select icon"),parent,"file",menudir);
       if (pp) {
@@ -7872,7 +7871,7 @@ int gmenuznames::edit_menu_event(zdialog *zd, cchar *event)
          zfree(pp);
       }
    }
-   
+
    if (! zd->zstat) return 1;                                                    //  wait for dialog completion
 
    if (zd->zstat == 2) {                                                         //  [delete] - delete menu entry
@@ -7892,9 +7891,9 @@ int gmenuznames::edit_menu_event(zdialog *zd, cchar *event)
    zdialog_fetch(zd,"text",text,maxText);
    if (*text) menus[me].menu = zstrdup(text);                                    //  menu text, optional
    else menus[me].menu = 0;
-   
+
    zdialog_fetch(zd,"bold",menus[me].bold);                                      //  bold text flag
-   
+
    zdialog_fetch(zd,"func",text,maxText);                                        //  menu function name
    strTrim2(text);
 
@@ -7932,7 +7931,7 @@ int gmenuznames::edit_menu_event(zdialog *zd, cchar *event)
       menus[me].icon = zstrdup(text);
       menus[me].pixbuf = pixbuf;
       menus[me].size = size;
-      deficonsize = size;                                                        //  set new default 
+      deficonsize = size;                                                        //  set new default
       menus[me].Fnewicon = 1;                                                    //  mark icon changed
    }
    else {                                                                        //  no icon
@@ -7959,7 +7958,7 @@ int gmenuznames::edit_menu_event(zdialog *zd, cchar *event)
 void gmenuznames::drag_drop_event(int mpx, int mpy, char *file)
 {
    using namespace gmenuznames;
-   
+
    FILE     *fid;
    char     buff[200], filetype[60], dtfile[200];
    char     *pp, name[100], exec[200], icon[200];
@@ -7968,7 +7967,7 @@ void gmenuznames::drag_drop_event(int mpx, int mpy, char *file)
    PIXBUF   *pixbuf = 0;
    int      ii, jj, uflag;
    int      size = deficonsize;                                                  //  default or last size set by user
-   
+
    #define Ndirs 8
 
    cchar    *icondir[Ndirs] = {                                                  //  compensate Linux chaos
@@ -7979,14 +7978,14 @@ void gmenuznames::drag_drop_event(int mpx, int mpy, char *file)
       "/usr/share/icons/*32*",
       "/usr?share/icons/*scalable*",
       "/usr/local/share/icons*",
-      "/usr/local/share/pixmaps*" 
+      "/usr/local/share/pixmaps*"
    };
-   
+
    if (! file) return;                                                           //  drag motion event
 
    #define Next 3
    cchar    *iconext[Next] = { "png", "svg", "xpm" };                            //  file extensions searched
-   
+
    if (NME == maxME) {
       zmessageACK(mWin,"capacity limit exceeded");
       return;
@@ -7994,7 +7993,7 @@ void gmenuznames::drag_drop_event(int mpx, int mpy, char *file)
 
    me = NME;
    memset(&menus[me],0,sizeof(menuent));                                         //  clear all data
-   
+
    pp = strrchr(file,'.');                                                       //  look if .desktop file
 
    if (pp && strmatch(pp,".desktop")) {
@@ -8030,7 +8029,7 @@ void gmenuznames::drag_drop_event(int mpx, int mpy, char *file)
          zmessageACK(mWin,strerror(errno));
          return;
       }
-      
+
       snprintf(dtfile,200,"/usr/share/applications/%s",pp);                      //  /usr/share/applications/appname.desktop
 
       pp = strrchr(dtfile,'.');
@@ -8045,9 +8044,9 @@ void gmenuznames::drag_drop_event(int mpx, int mpy, char *file)
       zmessageACK(mWin,strerror(errno));
       return;
    }
-   
+
    *name = *exec = *icon = 0;
-   
+
    while (true) {                                                                //  save .desktop parameters
       pp = fgets_trim(buff,200,fid);
       if (! pp) break;
@@ -8058,7 +8057,7 @@ void gmenuznames::drag_drop_event(int mpx, int mpy, char *file)
       if (strmatchN(buff,"Icon=",5) && ! *icon)                                  //  usr/share/app-install/icons/*.png
          strncpy0(icon,buff+5,200);
    }
-   
+
    fclose(fid);
 
    if (file) {
@@ -8077,7 +8076,7 @@ void gmenuznames::drag_drop_event(int mpx, int mpy, char *file)
       menus[me].menu = zstrdup(name);                                            //  menu name = appname
       menus[me].func = zstrdup(exec);                                            //  menu function = executable
    }
-   
+
    if (file && strmatchN(filetype,"image",5)) {                                  //  if image file, make icon from image
       pixbuf = gdk_pixbuf_new_from_file_at_size(file,size,size,&gerror);
       if (pixbuf) {
@@ -8090,11 +8089,11 @@ void gmenuznames::drag_drop_event(int mpx, int mpy, char *file)
 
    else if (*icon)                                                               //  make icon from .desktop file
    {
-      if (*icon == '/') {                                                        //  icon filespec is given 
+      if (*icon == '/') {                                                        //  icon filespec is given
          pp = icon;
          goto found;
       }
-      
+
       for (ii = 0; ii < Ndirs; ii++)                                             //  search icon locations
       for (jj = 0; jj < Next; jj++)                                              //  try known icon file types
       {
@@ -8130,7 +8129,7 @@ void gmenuznames::drag_drop_event(int mpx, int mpy, char *file)
    NME++;                                                                        //  incr. menu count
    Fchanged = 1;                                                                 //  mark menu revised
    gtk_widget_queue_draw(layout);                                                //  repaint window
-   
+
    edit_menu();                                                                  //  user can edit dropped menu
    return;
 }
@@ -8198,10 +8197,10 @@ GtkWidget * add_popmenu_item(GtkWidget *popmenu, cchar *mname, cbFunc func, ccha
    gtk_menu_shell_append(GTK_MENU_SHELL(popmenu),wmitem);
 
    if (func) {
-      if (arg) G_SIGNAL(wmitem,"activate",func,arg);                             //  call func with arg 
+      if (arg) G_SIGNAL(wmitem,"activate",func,arg);                             //  call func with arg
       else G_SIGNAL(wmitem,"activate",func,mname);                               //  call func with menu name
    }
-   
+
    if (mtip) {
       popmenu_widget = wmitem;                                                   //  trigger popup tool tip
       G_SIGNAL(wmitem,"select",popmenu_item_select,mtip);
@@ -8234,13 +8233,13 @@ void popmenu_item_select(GtkWidget *wmitem, cchar *mtip)                        
 void popup_menu(GtkWidget *widget, GtkWidget *popmenu)
 {
    int      mx, my;
-   
+
    if (mouse) {
       gdk_device_get_position(mouse,&screen,&mx,&my);                            //  offset popup menu from mouse
       gdk_device_warp(mouse,screen,mx+30,my);
    }
 
-   gtk_widget_show_all(popmenu);                                                 //  GTK change: show before popup 
+   gtk_widget_show_all(popmenu);                                                 //  GTK change: show before popup
 
    #if GTK_CHECK_VERSION(3,22,0)
       gtk_menu_popup_at_pointer(GTK_MENU(popmenu),null);
@@ -8271,12 +8270,12 @@ void popup_menu(GtkWidget *widget, GtkWidget *popmenu)
    Vmenu_add(vbm, name, icon, iww, ihh, desc, func, arg);                        //  add menu item
 
    Vmenu_add_RMfunc(vbm, me, RMfunc);                                            //  add right-click menu item
-   
+
    Vmenu_block(flag)
-      int      flag        1 to block Vmenu, 0 to unblock 
+      int      flag        1 to block Vmenu, 0 to unblock
 
    Create a vertical menu / toolbar in a vertical packing box.
-   fgRGB and bgRGB are font and background colors, RGB scaled 0-1.0 
+   fgRGB and bgRGB are font and background colors, RGB scaled 0-1.0
    Added items can have a menu name, icon, description, response function,
    and function argument. 'name' and 'icon' can be null but not both.
 
@@ -8350,7 +8349,7 @@ Vmenu *Vmenu_new(GtkWidget *vbox, float fgRGB[3], float bgRGB[3])
 
    menufont1 = zstrdup(zfuncs::appfont);                                         //  set menu fonts, normal and bold
    menufont2 = zstrdup(zfuncs::appboldfont);
-   
+
    pfont1 = pango_font_description_from_string(menufont1);
    pfont2 = pango_font_description_from_string(menufont2);
 
@@ -8451,7 +8450,7 @@ void Vmenu_add(Vmenu *vbm, cchar *name, cchar *icon, int iconww, int iconhh, cch
       vbm->ymax += 1.5 * fontheight;                                             //  more space between text lines
       vbm->menu[me].yhi = vbm->ymax;
    }
-   
+
    vbm->menu[me].playout1 = gtk_widget_create_pango_layout(vbm->layout,0);
    vbm->menu[me].playout2 = gtk_widget_create_pango_layout(vbm->layout,0);
 
@@ -8500,7 +8499,7 @@ void Vmenu_add_RMfunc(Vmenu *vbm, int me, cbFunc func, cchar *arg)
 void Vmenu_block(int flag)
 {
    using namespace Vmenunames;
-   
+
    Fblock = flag;
    return;
 }
@@ -8588,8 +8587,8 @@ void Vmenunames::mouse_event(GtkWidget *widget, GdkEventButton *event, Vmenu *vb
    static draw_context_t   context;
    static GtkWidget        *pwidget = 0;
    static cairo_t          *cr = 0;
-   
-   if (widget != pwidget) {                                                      //  widget changed 
+
+   if (widget != pwidget) {                                                      //  widget changed
       if (pwidget) draw_context_destroy(context);
       gdkwin = gtk_layout_get_bin_window(GTK_LAYOUT(widget));
       cr = draw_context_create(gdkwin,context);
@@ -8601,7 +8600,7 @@ void Vmenunames::mouse_event(GtkWidget *widget, GdkEventButton *event, Vmenu *vb
    mpx = int(event->x);                                                          //  mouse position
    mpy = int(event->y);
    button = event->button;
-   
+
    if (event->type == GDK_MOTION_NOTIFY)                                         //  mouse inside layout
    {
       for (me = 0; me < vbm->mcount; me++) {                                     //  find menu where mouse is
@@ -8663,10 +8662,10 @@ void Vmenunames::mouse_event(GtkWidget *widget, GdkEventButton *event, Vmenu *vb
       zfuncs::vmenuclickposn = mpx;
 
       paint_menu(cr,vbm,me,0);                                                   //  unhighlight menu
-      
+
       if (button == 3 && vbm->menu[me].RMfunc)                                   //  if right mouse button,
          vbm->menu[me].RMfunc(widget,vbm->menu[me].RMarg);                       //    call right-mouse function
-      
+
       else if (vbm->menu[me].func)
           vbm->menu[me].func(widget,vbm->menu[me].arg);                          //  caller function(widget,arg)
    }
@@ -8734,10 +8733,10 @@ zdialog * zdialog_new(cchar *title, GtkWidget *parent, ...)                     
    vbox = gtk_box_new(VERTICAL,0);                                               //  vertical packing box
    gtk_container_add(GTK_CONTAINER(dialog),vbox);                                //  add to main window
    gtk_window_set_default_size(GTK_WINDOW(dialog),10,10);                        //  stop auto width of 150 pixels
-   
+
    if (parent)
       gtk_window_set_transient_for(GTK_WINDOW(dialog),GTK_WINDOW(parent));
-   
+
    gtk_box_set_spacing(GTK_BOX(vbox),2);
    gtk_container_set_border_width(GTK_CONTAINER(vbox),5);
 
@@ -8858,7 +8857,7 @@ void zdialog_drag(GtkWidget *widget, GdkEventButton *event, void *)
       wy = wy0 + my - my0;
       gtk_window_move(GTK_WINDOW(widget),wx,wy);
    }
-   
+
    return;
 }
 
@@ -8882,19 +8881,19 @@ void zdialog_can_focus(zdialog *zd, int Fcan)
 }
 
 
-//  set focus on dialog window or window and named widget 
-//  (widget name may be null or missing) 
-//  see also: gtk_window_activate_focus(GtkWindow *) 
+//  set focus on dialog window or window and named widget
+//  (widget name may be null or missing)
+//  see also: gtk_window_activate_focus(GtkWindow *)
 
 void zdialog_set_focus(zdialog *zd, cchar *wname)
 {
    GtkWindow   *window;
    GtkWidget   *widget;
-   
+
    window = GTK_WINDOW(zd->dialog);
    if (wname) widget = zdialog_widget(zd,wname);
    else widget = 0;
-   
+
    if (wname) gtk_window_set_focus(window,widget);
    else gtk_window_activate_focus(window);
    return;
@@ -8965,7 +8964,7 @@ int zdialog_add_widget (
       printz("*** zdialog, bad widget type: %s \n",type);
       return 0;
    }
-   
+
    for (iip = iiw-1; iip >= 0; iip--)                                            //  find parent (container) widget
       if (strmatch(pname,zd->widget[iip].name)) break;
    if (iip < 0) zappcrash("zdialog, no parent for widget: %s",name);
@@ -9003,7 +9002,7 @@ int zdialog_add_widget (
    if (strmatch(type,"label")) {                                                 //  label (static text)
       widget = gtk_label_new(data);
       if (size) gtk_label_set_width_chars(GTK_LABEL(widget),size);
-      if (data && strstr(data,"<span")) 
+      if (data && strstr(data,"<span"))
          gtk_label_set_markup(GTK_LABEL(widget),data);
       data = 0;
    }
@@ -9028,7 +9027,7 @@ int zdialog_add_widget (
       widget = gtk_text_view_new();
       #if GTK_CHECK_VERSION(3,18,0)
       gtk_text_view_set_top_margin(GTK_TEXT_VIEW(widget),2);
-      gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(widget),2); 
+      gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(widget),2);
       #endif
       gtk_text_view_set_left_margin(GTK_TEXT_VIEW(widget),5);
       if (! size) size = 10;                                                     //  scale widget for font size
@@ -9045,7 +9044,7 @@ int zdialog_add_widget (
       widget = gtk_text_view_new();
       #if GTK_CHECK_VERSION(3,18,0)
       gtk_text_view_set_top_margin(GTK_TEXT_VIEW(widget),2);
-      gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(widget),2); 
+      gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(widget),2);
       #endif
       gtk_text_view_set_left_margin(GTK_TEXT_VIEW(widget),5);
       if (! size) size = 10;                                                     //  scale widget for font size
@@ -9062,7 +9061,7 @@ int zdialog_add_widget (
       widget = gtk_text_view_new();
       #if GTK_CHECK_VERSION(3,18,0)
       gtk_text_view_set_top_margin(GTK_TEXT_VIEW(widget),2);
-      gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(widget),2); 
+      gtk_text_view_set_bottom_margin(GTK_TEXT_VIEW(widget),2);
       #endif
       gtk_text_view_set_left_margin(GTK_TEXT_VIEW(widget),3);
       editBuff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
@@ -9076,7 +9075,7 @@ int zdialog_add_widget (
       G_SIGNAL(widget,"clicked",zdialog_widget_event,zd);
       data = 0;
    }
-   
+
    if (strmatch(type,"zbutton")) {                                               //  checkbox used as small button
       if (data) widget = gtk_check_button_new_with_label(data);
       else  widget = gtk_check_button_new();
@@ -9089,7 +9088,7 @@ int zdialog_add_widget (
       G_SIGNAL(widget,"toggled",zdialog_widget_event,zd);
       data = "0";                                                                //  default data
    }
-   
+
    if (strmatch(type,"imagebutt")) {                                             //  button with image
       snprintf(iconpath,200,"%s/%s",get_zimagedir(),data);
       data = 0;
@@ -9185,7 +9184,7 @@ int zdialog_add_widget (
       snprintf(vdata,30,"%g",val);
       data = vdata;
    }
-   
+
    if (strmatch(type,"zspin")) {                                                 //  "zspin" widget with range
       if (! data) zappcrash("zdialog_add_widget(): data missing");               //  "min|max|step|value"
       pp = strField(data,'|',1); err = convSD(pp,min);
@@ -9234,7 +9233,7 @@ int zdialog_add_widget (
    //  all widget types come here
 
    zd->widget[iiw].widget = widget;                                              //  set widget in zdialog
-   
+
    if (strmatchV(type,"zentry","zspin","edit",0)) {                              //  add frame around these widgets
       fwidget = gtk_frame_new(0);                                                //  removed "text"
       gtk_frame_set_shadow_type(GTK_FRAME(fwidget),GTK_SHADOW_IN);
@@ -9305,7 +9304,7 @@ int zdialog_valid(zdialog *zd, cchar *title)
       printz("*** zdialog sentinel invalid %p \n",zd);
       return 0;
    }
-   
+
    if (title && ! strmatch(title,zd->title)) return 0;
 
    return 1;
@@ -9455,7 +9454,7 @@ int zdialog_put_data(zdialog *zd, cchar *name, cchar *data)
    }
 
    zd->disabled++;                                                               //  disable for widget stuffing
-   
+
    if (strmatch(type,"label"))
       gtk_label_set_text(GTK_LABEL(widget),data);
 
@@ -9497,7 +9496,7 @@ int zdialog_put_data(zdialog *zd, cchar *name, cchar *data)
       if (kk != 0) dval = 0.0;
       gtk_spin_button_set_value(GTK_SPIN_BUTTON(widget),dval);
    }
-   
+
    if (strmatch(type,"zspin")) {                                                 //  "zspin" widget
       lolim = zd->widget[iiw].lolim;
       hilim = zd->widget[iiw].hilim;
@@ -9540,7 +9539,7 @@ int zdialog_put_data(zdialog *zd, cchar *name, cchar *data)
             F = sqrtf(F2);
             dval = nval - F * (nval - lval);
          }
-         
+
          else if (dval >= nval && dval < hval) {
             F2 = (dval - nval) / (hval - nval);
             F = sqrtf(F2);
@@ -9618,7 +9617,7 @@ int zdialog_set_limits(zdialog *zd, cchar *name, double min, double max)
 
    if (*type == 'h' || *type == 'v')
       gtk_range_set_range(GTK_RANGE(widget),min,max);
-   
+
    if (*type == 'z') {                                                           //  zspin
       zd->widget[iiw].lval = min;
       zd->widget[iiw].hval = max;
@@ -9632,7 +9631,7 @@ int zdialog_set_limits(zdialog *zd, cchar *name, double min, double max)
 //  Control small adjustments near the neutral value more precisely.
 //  lval and hval: the range of values to be rescaled.
 //  nval: the neutral value where the scale will be expanded the most.
-//        lval <= nval <= hval 
+//        lval <= nval <= hval
 
 int zdialog_rescale(zdialog *zd, cchar *name, float lval, float nval, float hval)
 {
@@ -9646,7 +9645,7 @@ int zdialog_rescale(zdialog *zd, cchar *name, float lval, float nval, float hval
       printz("*** zdialog_rescale, %s not found \n",name);
       return 0;
    }
-   
+
    if (lval > nval || nval > hval) {
       printz("*** zdialog_rescale, bad data: %s \n",name);
       return 0;
@@ -9677,8 +9676,8 @@ int zdialog_rescale(zdialog *zd, cchar *name, float lval, float nval, float hval
 //    "parent" = center on parent window
 //    "nn/nn" = position NW corner at relative x/y position in parent window,
 //              where nn/nn is a percent 0-100 of the parent window dimensions.
-//    "save" = save last user-set position and use this whenever the dialog 
-//             is repeated, also across sessions.  DEFAULT. 
+//    "save" = save last user-set position and use this whenever the dialog
+//             is repeated, also across sessions.  DEFAULT.
 //
 //  KBevent: extern void KBevent(GdkEventKey *event)
 //  This function must be supplied by the caller of zdialog.
@@ -9705,7 +9704,7 @@ int zdialog_run(zdialog *zd, zdialog_event evfunc, cchar *posn)
    dialog = zd->widget[0].widget;
    gtk_widget_show_all(dialog);                                                  //  activate dialog
 
-   G_SIGNAL(dialog,"focus-in-event",zdialog_focus_event,zd);                     //  connect focus event function 
+   G_SIGNAL(dialog,"focus-in-event",zdialog_focus_event,zd);                     //  connect focus event function
    G_SIGNAL(dialog,"key-press-event",zdialog_KB_press,zd);                       //  connect key press event function
    G_SIGNAL(dialog,"delete-event",zdialog_delete_event,zd);                      //  connect delete event function
 
@@ -9736,7 +9735,7 @@ int zdialog_widget_event(GtkWidget *widget, zdialog *zd)
    double            dval;
    float             lval, nval, hval, F;
    static int        cbadded = 0;
-   
+
    if (! zdialog_valid(zd)) return 1;
    if (zd->disabled) return 1;                                                   //  events disabled
 
@@ -9773,7 +9772,7 @@ found_widget:
    wtype = zd->widget[ii].type;
    wdata = 0;
 
-   if (strmatch(wtype,"button")) 
+   if (strmatch(wtype,"button"))
       wdata = gtk_button_get_label(GTK_BUTTON(widget));                          //  button label
 
    if (strmatch(wtype,"zbutton")) {                                              //  checkbox as smaller button
@@ -9828,7 +9827,7 @@ found_widget:
       snprintf(sdata,20,"%g",dval);
       wdata = sdata;
    }
-   
+
    if (strmatch(wtype,"colorbutt"))                                              //  color button
    {
       gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(widget),&gdkrgba);
@@ -9902,7 +9901,7 @@ int zdialog_focus_event(GtkWidget *, GdkEvent *event, zdialog *zd)
 int    Nkbshortcuts = 0;
 cchar  *kbshortcuts[10], *kbevents[10];
 
-void zdialog_KB_addshortcut(cchar *shortcut, cchar *event)                       //  e.g. ("Ctrl+D", "Done") 
+void zdialog_KB_addshortcut(cchar *shortcut, cchar *event)                       //  e.g. ("Ctrl+D", "Done")
 {
    if (Nkbshortcuts > 9) return;
    kbshortcuts[Nkbshortcuts] = zstrdup(shortcut);
@@ -9928,7 +9927,7 @@ int zdialog_KB_press(GtkWidget *widget, GdkEventKey *kbevent, zdialog *zd)
    int      KBkey = kbevent->keyval;
    cchar    *type;
    int      ii, cc, Ftext;
-   
+
    if (kbevent->state & GDK_CONTROL_MASK) KB_Ctrl = 1;
    if (kbevent->state & GDK_MOD1_MASK) KB_Alt = 1;
 
@@ -9940,7 +9939,7 @@ int zdialog_KB_press(GtkWidget *widget, GdkEventKey *kbevent, zdialog *zd)
    if (KBkey == GDK_KEY_F1) { KBevent(kbevent); return 1; };                     //  these keys handled by main app
    if (KBkey == GDK_KEY_F10) { KBevent(kbevent); return 1; };
    if (KBkey == GDK_KEY_F11) { KBevent(kbevent); return 1; };
-   
+
    for (ii = 0; ii < Nkbshortcuts; ii++) {                                       //  look for dialog button shortcut
       if (strstr(kbshortcuts[ii],"Ctrl") && ! KB_Ctrl) continue;
       if (strstr(kbshortcuts[ii],"Alt") && ! KB_Alt) continue;
@@ -9948,7 +9947,7 @@ int zdialog_KB_press(GtkWidget *widget, GdkEventKey *kbevent, zdialog *zd)
       if (KBkey == kbshortcuts[ii][cc-1]) break;                                 //  compare key to last char. in shortcut
       if (KBkey-32 == kbshortcuts[ii][cc-1]) break;                              //  (case indifferent compare)
    }
-   
+
    if (ii < Nkbshortcuts) {
       zdialog_send_event(zd,kbevents[ii]);                                       //  send corresp. event, e.g. "Done"
       return 1;
@@ -9961,13 +9960,13 @@ int zdialog_KB_press(GtkWidget *widget, GdkEventKey *kbevent, zdialog *zd)
 
    type = zd->widget[ii].type;
    if (! type) return 0;
-   
+
    Ftext = strmatchV(type,"zspin","zentry","entry","edit","text","spin",null);   //  text-edit widgets
 
-   if (KBkey == GDK_KEY_Left || KBkey == GDK_KEY_Right) {                        //  left/right arrow key 
+   if (KBkey == GDK_KEY_Left || KBkey == GDK_KEY_Right) {                        //  left/right arrow key
       if (! Ftext) {                                                             //  not a text-edit widget,
          KBevent(kbevent);                                                       //    pass key to main()
-         return 1; 
+         return 1;
       }
    }
 
@@ -10000,18 +9999,18 @@ int zdialog_zspin_event(GtkWidget *widget, GdkEvent *event, zdialog *zd)
    char        *wdata, sdata[20];
    int         time, elaps;
    static int  time0 = 0, time1 = 0;
-   
+
    if (! zdialog_valid(zd)) return 1;
    if (zd->disabled) return 1;                                                   //  zdialog events disabled
 
    for (ii = 1; zd->widget[ii].type; ii++)                                       //  find "zspin" (text view) widget
       if (zd->widget[ii].widget == widget) break;
    if (! zd->widget[ii].type) return 0;                                          //  not found
-   
+
    textBuff = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));                   //  get widget data
    gtk_text_buffer_get_bounds(textBuff,&iter1,&iter2);
    wdata = gtk_text_buffer_get_text(textBuff,&iter1,&iter2,0);
-   
+
    lolim = zd->widget[ii].lolim;                                                 //  limits and step size
    hilim = zd->widget[ii].hilim;
    step = zd->widget[ii].step;
@@ -10031,7 +10030,7 @@ int zdialog_zspin_event(GtkWidget *widget, GdkEvent *event, zdialog *zd)
       if (KBkey == GDK_KEY_Up) incr = 1;
       if (KBkey == GDK_KEY_Down) incr = -1;
       if (! incr) return 0;                                                      //  must return 0
-      
+
       state = ((GdkEventKey *) event)->state;                                    //  if shift key held, use 10x step
       if (state & GDK_SHIFT_MASK) incr *= 10;
 
@@ -10062,7 +10061,7 @@ checklimits:
 
    Nsteps = (fdata - lolim) / step + 0.5;                                        //  set nearest exact step
    fdata = lolim + Nsteps * step;
-   
+
    err = 0;
 
    if (fdata < lolim) {                                                          //  force within range
@@ -10188,7 +10187,7 @@ found_widget:
 int zdialog_delete_event(GtkWidget *, GdkEvent *, zdialog *zd)
 {
    zdialog_event  *evfunc = 0;                                                   //  dialog event callback function
-   
+
    if (! zdialog_valid(zd)) return 1;
    if (zd->zstat) return 1;                                                      //  already complete
    if (zd->disabled) return 1;                                                   //  in process
@@ -10201,7 +10200,7 @@ int zdialog_delete_event(GtkWidget *, GdkEvent *, zdialog *zd)
       evfunc(zd,"zstat");
       if (zdialog_valid(zd)) zd->disabled = 0;                                   //  'event' may cause zdialog_free()
    }
-   
+
    if (zdialog_valid(zd)) zdialog_destroy(zd);                                   //  caller should zdialog_free()
    return 0;
 }
@@ -10216,7 +10215,7 @@ int zdialog_send_event(zdialog *zd, cchar *event)
 
    int      ii;
    cchar    *eventx = E2X(event);                                                //  translated event
-   
+
    if (! zdialog_valid(zd)) return 0;                                            //  canceled
    if (zd->disabled) return 0;                                                   //  busy
 
@@ -10230,7 +10229,7 @@ int zdialog_send_event(zdialog *zd, cchar *event)
          zd->zstat = ii+1;                                                       //  zdialog status = button no.
          strcpy(zd->event,"zstat");                                              //  event = "zstat"
       }
-      else if (strmatch(event,"Cancel"))                                         //  no [Cancel] button in zdialog, 
+      else if (strmatch(event,"Cancel"))                                         //  no [Cancel] button in zdialog,
          zdialog_destroy(zd);                                                    //  handle same as [x]
    }
 
@@ -10283,7 +10282,7 @@ int zdialog_show(zdialog *zd, int show)
          pwidget = 0;
       }
       gtk_widget_show_all(widget);
-      gtk_window_present(GTK_WINDOW(widget));                                    //  set focus on restored window 
+      gtk_window_present(GTK_WINDOW(widget));                                    //  set focus on restored window
    }
    else {                                                                        //  hide window
       pwidget = widget;
@@ -10322,7 +10321,7 @@ int zdialog_destroy(zdialog *zd)
 int zdialog_free(zdialog *&zd)                                                   //  reference
 {
    int      ii;
-   
+
    if (! zdialog_valid(zd)) return 0;                                            //  validate zd pointer
 
    zdialog_save_inputs(zd);                                                      //  save user inputs for next use
@@ -10449,7 +10448,7 @@ int zdialog_labelfont(zdialog *zd, cchar *labl, cchar *font, cchar *txt)        
    GtkWidget   *widget;
    cchar       *format =  "<span font=\"%s\" >%s</span>";
    char        txt2[1000];
-   
+
    if (! font) font = zfuncs::appfont;                                           //  default font
    snprintf(txt2,1000,format,font,txt);
    widget = zdialog_widget(zd,labl);
@@ -10682,7 +10681,7 @@ int zdialog_cb_popup(zdialog *zd, cchar *name)
 //  save all combo box entries to a file in /home/<user>/.appname/filename
 //  returns 0 = OK, +N = error
 
-int zdialog_cb_save(zdialog *zd, cchar *name, cchar *filename) 
+int zdialog_cb_save(zdialog *zd, cchar *name, cchar *filename)
 {
    char     file[200], *pp;
    int      ii, jj, nn;
@@ -10706,7 +10705,7 @@ int zdialog_cb_save(zdialog *zd, cchar *name, cchar *filename)
       pp = pvlist_get(zd->widget[ii].cblist,jj);
       fprintf(fid,"%s\n",pp);
    }
-   
+
    fclose(fid);
    return 0;
 }
@@ -10733,13 +10732,13 @@ int zdialog_cb_load(zdialog *zd, cchar *name, cchar *filename)
    snprintf(file,200,"%s/%s",get_zhomedir(),filename);
    fid = fopen(file,"r");
    if (! fid) return 0;
-   
+
    while (true) {
       pp = fgets_trim(data,99,fid);
       if (! pp) break;
       zdialog_cb_app(zd,name,data);
    }
-   
+
    fclose(fid);
    return 0;
 }
@@ -10823,7 +10822,7 @@ int zdialog_geometry(cchar *action)
       for (ii = 0; ii < Nzdposn; ii++) {
          fprintf(fid,"%s || %0.1f %0.1f %d %d \n",                               //  dialog-title || xpos ypos xsize ysize
                            zdposn[ii].wintitle,
-                           zdposn[ii].xpos, zdposn[ii].ypos, 
+                           zdposn[ii].xpos, zdposn[ii].ypos,
                            zdposn[ii].xsize, zdposn[ii].ysize);
       }
 
@@ -10948,7 +10947,7 @@ void zdialog_save_position(zdialog *zd)
 
    gtk_window_get_position(GTK_WINDOW(dialog),&zdpx,&zdpy);                      //  dialog window NW corner
    if (! zdpx && ! zdpy) return;                                                 //  (0,0) ignore
-   
+
    gtk_window_get_size(GTK_WINDOW(dialog),&xsize,&ysize);                        //  window size
 
    parent = zd->parent;                                                          //  parent window
@@ -10995,7 +10994,7 @@ void zdialog_save_position(zdialog *zd)
 namespace zdinputs_names
 {
    #define  Nwmax zdmaxwidgets                                                   //  max. widgets in a dialog
-   #define  Nzdmax 200                                                           //  max. zdialogs 
+   #define  Nzdmax 200                                                           //  max. zdialogs
    #define  ccmax1 100                                                           //  max. widget name length
    #define  ccmax2 400                                                           //  max. widget data length
 
@@ -11137,7 +11136,7 @@ int zdialog_save_inputs(zdialog *zd)
 
    char     zdtitle[ccmax1], wname[ccmax1], wdata[ccmax2], *type;
    int      ii, jj, Nw, cc;
-   
+
    if (! zdialog_valid(zd)) return 0;
    if (! zd->saveinputs) return 0;                                               //  zdialog does not use this service
 
@@ -11187,10 +11186,10 @@ int zdialog_save_inputs(zdialog *zd)
 
    for (Nw = 0, jj = 1; zd->widget[jj].type; jj++) {                             //  add widget names and data
       type = (char *) zd->widget[jj].type;
-      if (strstr("dialog hbox vbox hsep vsep frame scrwin"                       //  skip non-input widgets 
+      if (strstr("dialog hbox vbox hsep vsep frame scrwin"                       //  skip non-input widgets
                  "label link button zbutton",type)) continue;
       strncpy0(wname,zd->widget[jj].name,ccmax1);
-      if (zd->widget[jj].data) 
+      if (zd->widget[jj].data)
          strncpy0(wdata,zd->widget[jj].data,ccmax2);
       else strcpy(wdata,"");
       zdinputs[ii].wname[Nw] = zstrdup(wname);
@@ -11209,7 +11208,7 @@ int zdialog_save_inputs(zdialog *zd)
 //  Call this if wanted after zdialog is built and before it is run.
 //  Override old user inputs with zdialog_stuff() where needed.
 
-int zdialog_restore_inputs(zdialog *zd) 
+int zdialog_restore_inputs(zdialog *zd)
 {
    using namespace zdinputs_names;
 
@@ -11239,10 +11238,10 @@ int zdialog_restore_inputs(zdialog *zd)
 //  move a window to the mouse position
 //  widget is a GtkWindow, which may or may not be realized
 
-void window_to_mouse(GtkWidget *window) 
+void window_to_mouse(GtkWidget *window)
 {
    using namespace zfuncs;
-   
+
    int      px, py;
 
    gdk_device_get_position(mouse,&screen,&px,&py);                               //  get mouse position
@@ -11253,39 +11252,39 @@ void window_to_mouse(GtkWidget *window)
 
 /********************************************************************************/
 
-//  popup window with scrolling text report 
+//  popup window with scrolling text report
 //  line numbers and line positions are zero based
 
 //  open the report window with given title and pixel dimensions
 //  Fheader - add optional non-scrolling header at top of report window
-//  CBfunc - optional callback function: 
+//  CBfunc - optional callback function:
 //             CBfunc(GtkWidget *, int line, int posn, int KBkey)
 //  ...   - optional event buttons terminated with null:
 //             [ OK ] [cancel] [hide] [find] are processed here
-//             others are passed to callback function (1st character) 
+//             others are passed to callback function (1st character)
 
 zdialog * popup_report_open(cchar *title, GtkWidget *parent, int ww, int hh,
                           int Fheader, textwidget_callbackfunc_t CBfunc, ...)
 {
    int popup_report_dialog_event(zdialog *zd, cchar *event);
-   
+
    va_list     arglist;
    cchar       *butn[6];
    int         ii, NB;
    zdialog     *zd;
    GtkWidget   *mHead, *mText;
-   
+
    va_start(arglist,CBfunc);                                                     //  get button args, if any
 
    for (ii = 0; ii < 5; ii++) {
       butn[ii] = va_arg(arglist,cchar *);
       if (! butn[ii]) break;
    }
-   
+
    NB = ii;                                                                      //  no. buttons
-   
+
    zd = zdialog_new(title,parent,null);
-   
+
    if (Fheader) {                                                                //  non-scrolling header
       zdialog_add_widget(zd,"text","header","dialog");
       zdialog_add_widget(zd,"hsep","hsep","dialog");
@@ -11293,18 +11292,18 @@ zdialog * popup_report_open(cchar *title, GtkWidget *parent, int ww, int hh,
 
    zdialog_add_widget(zd,"scrwin","scroll","dialog",0,"expand");                 //  scrolling text window for report
    zdialog_add_widget(zd,"text","text","scroll",0,"expand");
-   
+
    if (NB) {                                                                     //  optional event buttons
       zdialog_add_widget(zd,"hbox","hbbutn","dialog");
       zdialog_add_widget(zd,"label","space","hbbutn",0,"expand");
       for (ii = 0; ii < NB; ii++)
          zdialog_add_widget(zd,"button",butn[ii],"hbbutn",butn[ii],"space=5");
    }
-   
+
    zdialog_resize(zd,ww,hh);                                                     //  show report dialog box
    zdialog_run(zd,popup_report_dialog_event,"parent");
 
-   if (Fheader) {   
+   if (Fheader) {
       mHead = zdialog_widget(zd,"header");                                       //  header initially invisible
       gtk_widget_set_visible(mHead,0);
    }
@@ -11325,42 +11324,42 @@ zdialog * popup_report_open(cchar *title, GtkWidget *parent, int ww, int hh,
 int popup_report_dialog_event(zdialog *zd, cchar *event)
 {
    textwidget_callbackfunc_t  *CBfunc;
-   
+
    GtkWidget    *mText;
    static char  findtext[40] = "";
    int          linem, line1, line2;
    zdialog      *zdf;
-   
+
    if (strmatch(event,"focus")) return 1;
-   
+
    mText = zdialog_widget(zd,"text");
-   
+
    if (zd->zstat) {                                                              //  [x] cancel
       zdialog_free(zd);
       return 1;
    }
-   
+
    if (strmatch(event,"cancel")) {                                               //  [cancel]
       zdialog_free(zd);
       return 1;
    }
-   
+
    if (strmatch(event,"done")) {                                                 //  [ OK ]
       zdialog_free(zd);
       return 1;
    }
-   
+
    if (strmatch(event,"hide")) {                                                 //  [hide]
       zdialog_show(zd,0);
       return 1;
    }
-   
+
    if (strmatch(event,"find")) {                                                 //  [find]
       zdf = zdialog_new("find text",zd->dialog,"find","cancel",0);               //  popup dialog to enter text
       zdialog_add_widget(zdf,"entry","text","dialog",findtext,"size=20");
       zdialog_run(zdf,0,"mouse");
       linem = -1;                                                                //  no match line yet
-      while (true) 
+      while (true)
       {
          zdialog_wait(zdf);
          if (zdf->zstat != 1) {                                                  //  [cancel]
@@ -11377,7 +11376,7 @@ int popup_report_dialog_event(zdialog *zd, cchar *event)
          linem++;                                                                //  next search from line
       }
    }
-   
+
    CBfunc = (textwidget_callbackfunc_t *) zd->popup_report_CB;                   //  other event
    if (CBfunc) CBfunc(mText,-1,-1,*event);                                       //  pass to callback function (1st char.)
 
@@ -11631,7 +11630,7 @@ void popup_report_font_attributes(zdialog *zd)
 
 
 //  close report after given seconds (OK to leave it open until user closes)
-//  also connected to window destroy signal (secs = 0) 
+//  also connected to window destroy signal (secs = 0)
 
 void popup_report_close(zdialog *zd, int secs)
 {
@@ -11668,7 +11667,7 @@ int popup_command(cchar *command, int ww, int hh, GtkWidget *parent, int top)
    zdialog     *zd;
 
    zd = popup_report_open(command,parent,ww,hh,0,0,"find","done",0);
-   
+
    fid = popen(command,"r");
    if (! fid) return 1;
    while (true) {
@@ -11699,16 +11698,16 @@ void zmessageACK(GtkWidget *parent, cchar *format, ... )
    va_start(arglist,format);                                                     //  format the message
    vsnprintf(message,1000,format,arglist);
    va_end(arglist);
-   
-   printz("%s \n",message);                                                      //  output to log file 
+
+   printz("%s \n",message);                                                      //  output to log file
 
    if (! pthread_equal(pthread_self(),zfuncs::tid_main)) {                       //  caller is a thread                 21.0
-      snprintf(xmessage,1000,"xmessage -center %s",message);                     //  use xmessage() 
+      snprintf(xmessage,1000,"xmessage -center %s",message);                     //  use xmessage()
       Qshell(0,0,xmessage);
       return;
    }
 
-   zd = zdialog_new("",parent,"OK",null);                                        //  caller is main() 
+   zd = zdialog_new("",parent,"OK",null);                                        //  caller is main()
    zdialog_add_widget(zd,"hbox","hb1","dialog",0,"space=3");
    zdialog_add_widget(zd,"label","lab1","hb1",message,"space=5");
    zdialog_resize(zd,200,0);
@@ -11741,7 +11740,7 @@ int zmessageYN(GtkWidget *parent, cchar *format, ... )
    va_end(arglist);
 
    printz("%s \n",message);                                                      //  output to log file
-   
+
    if (! pthread_equal(pthread_self(),zfuncs::tid_main))                         //  21.0
       zappcrash("zmessageYN() called from thread");
 
@@ -11776,7 +11775,7 @@ typedef struct {
 zdialog * zmessage_post(GtkWidget *parent, cchar *loc, int seconds, cchar *format, ... )
 {
    int  zmessage_post_timeout(zdx_t *zdx);
-   
+
    va_list           arglist;
    char              message[1000], xmessage[1000];
    static zdx_t      zdx[100];
@@ -11786,7 +11785,7 @@ zdialog * zmessage_post(GtkWidget *parent, cchar *loc, int seconds, cchar *forma
    va_start(arglist,format);
    vsnprintf(message,1000,format,arglist);
    va_end(arglist);
-   
+
    printz("%s \n",message);                                                      //  output to log file
 
    if (! pthread_equal(pthread_self(),zfuncs::tid_main)) {                       //  called from thread, use xmessage
@@ -11800,13 +11799,13 @@ zdialog * zmessage_post(GtkWidget *parent, cchar *loc, int seconds, cchar *forma
    zdialog_add_widget(zd,"hbox","hb1","dialog",0,"space=3");
    zdialog_add_widget(zd,"label","lab1","hb1",message,"space=5");
    zdialog_set_decorated(zd,0);
-   
+
    zdialog_run(zd,0,loc);                                                        //  mouse position
    zdialog_present(zd);                                                          //  help wayland
    if (parent) gtk_window_present(GTK_WINDOW(parent));                           //  return focus to parent
 
    if (seconds) {
-      if (ii < 99) ii++;                                                         //  track unique zdialogs 
+      if (ii < 99) ii++;                                                         //  track unique zdialogs
       else ii = 0;
       zdx[ii].zd = zd;
       zdx[ii].uniqueID = zd->uniqueID;
@@ -11822,7 +11821,7 @@ zdialog * zmessage_post(GtkWidget *parent, cchar *loc, int seconds, cchar *forma
 zdialog * zmessage_post_bold(GtkWidget *parent, cchar *loc, int seconds, cchar *format, ... )
 {
    int  zmessage_post_timeout(zdx_t *zdx);
-   
+
    va_list           arglist;
    char              message[400], messagebold[460];
    static zdx_t      zdx[100];
@@ -11832,18 +11831,18 @@ zdialog * zmessage_post_bold(GtkWidget *parent, cchar *loc, int seconds, cchar *
    va_start(arglist,format);
    vsnprintf(message,400,format,arglist);
    va_end(arglist);
-   
+
    printz("%s \n",message);                                                      //  output to log file
 
    if (! pthread_equal(pthread_self(),zfuncs::tid_main)) return 0;               //  called from thread
 
    snprintf(messagebold,460,"<span font=\"bold\" color=\"red\">%s</span>",message);
-   
+
    zd = zdialog_new("post",parent,null);
    zdialog_add_widget(zd,"hbox","hb1","dialog",0,"space=3");
    zdialog_add_widget(zd,"label","lab1","hb1",messagebold,"space=5");
    zdialog_set_decorated(zd,0);
-   
+
    zdialog_run(zd,0,loc);                                                        //  mouse position
    zdialog_present(zd);                                                          //  help wayland
    if (parent) gtk_window_present(GTK_WINDOW(parent));                           //  return focus to parent
@@ -12071,7 +12070,7 @@ void poptext_mouse(cchar *text, int dx, int dy, float secs1, float secs2)
 }
 
 
-//  Show a popup text message at the given window position. 
+//  Show a popup text message at the given window position.
 
 void poptext_window(GtkWindow *win, cchar *text, int dx, int dy, float secs1, float secs2)
 {
@@ -12258,7 +12257,7 @@ int popup_image_scroll(GtkWidget *window, GdkEvent *event, int &nn)
 
    sww = monitor_ww;
    shh = monitor_hh;
-   
+
    if (ww > sww || hh > shh) {                                                   //  request > screen size, fullscreen
       reqfull[nn] = 1;
       gtk_window_fullscreen(GTK_WINDOW(window));
@@ -12295,7 +12294,7 @@ int popup_image_KBevent(GtkWidget *window, GdkEventKey *event, int &nn)
    else {
       reqfull[nn] = 1;
       gtk_window_fullscreen(GTK_WINDOW(window));
-   }      
+   }
 
    return 1;
 }
@@ -12303,7 +12302,7 @@ int popup_image_KBevent(GtkWidget *window, GdkEventKey *event, int &nn)
 
 //  respond to mouse button - destroy window
 
-int popup_image_mousebutt(GtkWidget *window, GdkEvent *event, int &nn) 
+int popup_image_mousebutt(GtkWidget *window, GdkEvent *event, int &nn)
 {
    gtk_widget_destroy(window);
    return 1;
@@ -12315,7 +12314,7 @@ int popup_image_mousebutt(GtkWidget *window, GdkEvent *event, int &nn)
 int popup_image_state_event(GtkWidget *window, GdkEvent *event, int &nn)
 {
    using namespace popup_image_names;
-   
+
    int state = ((GdkEventWindowState *) event)->new_window_state;
    if (state & GDK_WINDOW_STATE_FULLSCREEN) isfull[nn] = 1;
    else isfull[nn] = 0;
@@ -12428,7 +12427,7 @@ char ** zgetfiles(cchar *title, GtkWindow *parent, cchar *action, cchar *initfil
       buttxx = E2X("hidden");
       bcode = 103;
    }
-   
+
    dialog = gtk_file_chooser_dialog_new(title, parent, fcact,                    //  create file selection dialog
                               button1, GTK_RESPONSE_ACCEPT,                      //  parent added
                               E2X("Cancel"), GTK_RESPONSE_CANCEL,
@@ -12557,13 +12556,13 @@ int zgetfile_KBkey(GtkWidget *dialog, GdkEventKey *event, int &fcdes)
       KBevent(event);
       return 1;
    }
-   
+
    if (KBkey == GDK_KEY_Escape) {                                                //  escape = cancel
       gtk_widget_destroy(dialog);
       fcdes = 1;
       return 1;
    }
-   
+
    return 0;
 }
 
@@ -12888,7 +12887,7 @@ int print_image::margins_dialog_event(zdialog *zd, cchar *event)
    using namespace print_image;
 
    double   temp;
-   
+
    if (strmatch(event,"escape")) {                                               //  escape = cancel
       zd->zstat = 2;
       return 1;
@@ -13016,7 +13015,7 @@ void drag_drop_source2(GtkWidget *widget, GdkDragContext *context, void *ufunc)
    GdkPixbuf   *pixbuf;
    GError      *gerror = 0;
    char        *file = 0;
-   
+
    ufunc2 = (drag_drop_source_func *) ufunc;
    file = ufunc2();
    if (! file) goto cancel;
@@ -13030,10 +13029,10 @@ void drag_drop_source2(GtkWidget *widget, GdkDragContext *context, void *ufunc)
    gtk_drag_set_icon_pixbuf(context,pixbuf,64,64);                               //  hot spot is middle of image
    return;
 
-cancel: 
+cancel:
    printz("drag canceled \n");
    return;
-}   
+}
 
 
 //  private function for "drag-data-get" signal
@@ -13044,7 +13043,7 @@ void drag_drop_source3(GtkWidget *widget, GdkDragContext *context, GtkSelectionD
 
    char        *file = 0;
 // char        *files[2] = { file, null };
-   
+
    ufunc2 = (drag_drop_source_func *) ufunc;
    file = ufunc2();
    if (! file) goto cancel;
@@ -13052,7 +13051,7 @@ void drag_drop_source3(GtkWidget *widget, GdkDragContext *context, GtkSelectionD
 // gtk_selection_data_set_uris(data,files);                                      //  does nothing     FIXME
    return;
 
-cancel: 
+cancel:
    printz("drag canceled \n");
    return;
 }
@@ -13109,7 +13108,7 @@ int drag_drop_dest2(GtkWidget *, GdkDragContext *context, int mpx, int mpy, void
       ufunc2(mpx,mpy,text2);
    }
 
-   gtk_drag_finish(context,1,0,time); 
+   gtk_drag_finish(context,1,0,time);
    return 1;
 }
 
@@ -13396,7 +13395,7 @@ PIXBUF * gdk_pixbuf_stripalpha(PIXBUF *pixbuf1)
    color = gdk_pixbuf_get_colorspace(pixbuf1);
    ww = gdk_pixbuf_get_width(pixbuf1);
    hh = gdk_pixbuf_get_height(pixbuf1);
-   
+
    pixbuf2 = gdk_pixbuf_new(color,0,8,ww,hh);                                    //  create output pixbuf2
    if (! pixbuf2) return 0;
 
@@ -13404,7 +13403,7 @@ PIXBUF * gdk_pixbuf_stripalpha(PIXBUF *pixbuf1)
    ppix2 = gdk_pixbuf_get_pixels(pixbuf2);                                       //  output pixel array
    rs1 = gdk_pixbuf_get_rowstride(pixbuf1);
    rs2 = gdk_pixbuf_get_rowstride(pixbuf2);
-   
+
    for (py = 0; py < hh; py++)
    {
       pix1 = ppix1 + py * rs1;
@@ -13417,7 +13416,7 @@ PIXBUF * gdk_pixbuf_stripalpha(PIXBUF *pixbuf1)
          pix2 += nch-1;
       }
    }
-   
+
    return pixbuf2;
 }
 
@@ -13427,7 +13426,7 @@ PIXBUF * gdk_pixbuf_stripalpha(PIXBUF *pixbuf1)
 //  Create a pixbuf containing text with designated font and attributes.
 //  Text is white on black. Widget is ultimate display destination.
 
-PIXBUF * text_pixbuf(cchar *text, cchar *font, int fontsize, GtkWidget *widget) 
+PIXBUF * text_pixbuf(cchar *text, cchar *font, int fontsize, GtkWidget *widget)
 {
    char                    font2[60];
    PangoFontDescription    *pfont;
@@ -13438,14 +13437,14 @@ PIXBUF * text_pixbuf(cchar *text, cchar *font, int fontsize, GtkWidget *widget)
    uint8                   *pixels, *cairo_data, *cpix, *pix2;
    int                     ww, hh, rs, px, py;
 
-   if (! font) font = zfuncs::appfont;                                           //  default font 
+   if (! font) font = zfuncs::appfont;                                           //  default font
 
    snprintf(font2,60,"%s %d",font,fontsize);                                     //  combine font and size
 
    pfont = pango_font_description_from_string(font2);                            //  make layout with text
    playout = gtk_widget_create_pango_layout(widget,text);
    pango_layout_set_font_description(playout,pfont);
-   
+
    pango_layout_get_pixel_size(playout,&ww,&hh);
    ww += 2 + 0.2 * fontsize;                                                     //  compensate bad font metrics
    hh += 2 + 0.1 * fontsize;
@@ -13455,7 +13454,7 @@ PIXBUF * text_pixbuf(cchar *text, cchar *font, int fontsize, GtkWidget *widget)
    pango_cairo_show_layout(cr,playout);                                          //  write text layout to image
 
    cairo_data = cairo_image_surface_get_data(surface);                           //  get text image pixels
-   
+
    pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB,0,8,ww,hh);
    rs = gdk_pixbuf_get_rowstride(pixbuf);
    pixels = gdk_pixbuf_get_pixels(pixbuf);
