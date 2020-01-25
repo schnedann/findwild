@@ -1100,23 +1100,6 @@ void zsleep(double dsecs)
    return;
 }
 
-
-/********************************************************************************/
-
-//  loop for specified time in seconds (double)
-
-void zloop(double dsecs)
-{
-   double  time0, time1;
-
-   if (dsecs <= 0) return;
-   time0 = get_seconds();
-   time1 = time0 + dsecs;
-   while (get_seconds() < time1) continue;
-   return;
-}
-
-
 /********************************************************************************/
 
 //  Lock or unlock a multi-process multi-thread resource.
