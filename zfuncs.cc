@@ -280,8 +280,10 @@ using namespace zfuncs;
 
 void * zmalloc(size_t cc)
 {
-   double      memavail, fcc;
-   static int  ftf = 1, memcheck = 1;
+   double     memavail;
+   double     fcc;
+   static int ftf = 1;
+          int memcheck = 1;
 
    if (ftf) {                                                                    //  first call
       ftf = 0;
@@ -289,7 +291,7 @@ void * zmalloc(size_t cc)
       if (! memavail) memcheck = 0;                                              //  no, memory check not possible
    }
 
-   if (memcheck && cc > 10000)                                                   //  large block
+   if (memcheck && (cc > 10000))                                                   //  large block
    {
       parseprocfile("/proc/meminfo","MemAvailable:",&memavail,0);                //  free memory (+ cache) KB units
       memavail = memavail / 1024;                                                //  do compare in MB units
@@ -298,25 +300,25 @@ void * zmalloc(size_t cc)
    }
 
    void *pp = malloc(cc);                                                        //  allocate memory
-   if (! pp) zexit("OUT OF MEMORY");
+   if (nullptr==pp) zexit("OUT OF MEMORY");
 
    memset(pp,0,cc);                                                              //  clear to zero
    return pp;
 }
 
 
-void zfree(void *puser)
-{
+void zfree(void *puser){
    return free(puser);
 }
 
 
-char *zstrdup(cchar *string, int addcc)
-{
-   if (! string) zappcrash("zstrdup() null arg");
-   char *pp = (char *) zmalloc(strlen(string) + 1 + addcc);                      //  add additional chars.
-   strcpy(pp,string);
-   return pp;
+char *zstrdup(cchar *string, int addcc){
+  if(nullptr!=string){
+    zappcrash("zstrdup() null arg");
+  }
+  char *pp = (char *) zmalloc(strlen(string) + 1 + addcc);                      //  add additional chars.
+  strcpy(pp,string);
+  return pp;
 }
 
 
@@ -324,16 +326,17 @@ char *zstrdup(cchar *string, int addcc)
 
 //  printf() and flush every output immediately even if stdout is a file
 
-void printz(cchar *format, ...)
-{
-   va_list  arglist;
+void printz(cchar *format, ...){
+  if(nullptr!=format){
+    va_list  arglist;
 
-   va_start(arglist,format);
-   vprintf(format,arglist);
-   va_end(arglist);
+    va_start(arglist,format);
+    vprintf(format,arglist);
+    va_end(arglist);
 
-   fflush(stdout);
-   return;
+    fflush(stdout);
+  }
+  return;
 }
 
 
@@ -342,20 +345,22 @@ void printz(cchar *format, ...)
 //  Output a status or error message and kill all processes in the process group.
 //  Use the function killpg(0,SIGKILL) to kill all processes, including the caller.
 
-void zexit(cchar *errmess, ...)
-{
-   va_list  arglist;
-   char     buff[200];
+void zexit(cchar *errmess, ...){
+  static constexpr size_t const buffersize = 256;
+  va_list  arglist;
+  char     buff[buffersize];
 
-   if (errmess) {                                                                //  output error message
-      va_start(arglist,errmess);
-      vsnprintf(buff,200,errmess,arglist);
-      printz("zexit: %s\n",buff);
-   }
-   else printz("zexit\n");
+  if(nullptr!=errmess){                    //  output error message
+    va_start(arglist,errmess);
+    vsnprintf(buff,buffersize,errmess,arglist);
+    printz("zexit: %s\n",buff);
+  }else{
+    printz("zexit\n");
+  }
 
-   killpg(0,SIGKILL);                                                            //  kill all processes in group
-   sleep(10);                                                                    //  wait here to die
+  killpg(0,SIGKILL);                       //  kill all processes in group
+  sleep(10);                               //  wait here to die
+  return;
 }
 
 
@@ -363,15 +368,13 @@ void zexit(cchar *errmess, ...)
 
 //  produce a backtrace dump to stdout
 
-void zbacktrace()
-{
-   int      nstack = 100;
-   void     *stacklist[100];
+void zbacktrace(){
+  static constexpr int const listsize = 100;
+   int      nstack = listsize;
+   void     *stacklist[listsize];
 
-   nstack = backtrace(stacklist,nstack);                                         //  get backtrace data
-   if (nstack > 100) nstack = 100;
-   backtrace_symbols_fd(stacklist,nstack,STDOUT_FILENO);                         //  backtrace records to STDOUT
-
+   nstack = backtrace(stacklist,nstack);                                                //  get backtrace data
+   backtrace_symbols_fd(stacklist,(nstack>listsize)?(listsize):(nstack),STDOUT_FILENO); //  backtrace records to STDOUT
    return;
 }
 
@@ -384,106 +387,105 @@ void zbacktrace()
 
 void zappcrash(cchar *format, ... )
 {
-   static int     crash = 0;
-   struct utsname unbuff;
-   va_list        arglist;
-   FILE           *fid1, *fid2, *fid3;
-   int            fd, ii, err, cc, nstack = 100;
-   int            Flinenos = 1;
-   void           *stacklist[100];
-   char           OS1[60] = "", OS2[60] = "", OS3[60] = "";
-   char           message[300], progexe[300];
-   char           buff1[300], buff2[300], hexaddr[20];
-   char           *arch, *pp1, *pp2, dlim, *pfunc;
+  static int     crash = 0;
+  struct utsname unbuff;
+  va_list        arglist;
+  FILE           *fid1, *fid2, *fid3;
+  int            fd, ii, err, cc, nstack = 100;
+  int            Flinenos = 1;
+  void           *stacklist[100];
+  char           OS1[60] = "", OS2[60] = "", OS3[60] = "";
+  char           message[300], progexe[300];
+  char           buff1[300], buff2[300], hexaddr[20];
+  char           *arch, *pp1, *pp2, dlim, *pfunc;
 
-   if (crash++) return;                                                          //  re-entry or multiple threads crash
+  if (crash++) return;                                                          //  re-entry or multiple threads crash
 
-   va_start(arglist,format);
-   vsnprintf(message,300,format,arglist);
-   va_end(arglist);
+  va_start(arglist,format);
+  vsnprintf(message,300,format,arglist);
+  va_end(arglist);
 
-   uname(&unbuff);                                                               //  get cpu arch. 32/64 bit
-   arch = unbuff.machine;
-   fid1 = popen("lsb_release -d","r");                                           //  get Linux flavor and release
-   if (fid1) {
-      ii = fscanf(fid1,"%s %s %s",OS1,OS2,OS3);
-      pclose(fid1);
-   }
+  uname(&unbuff);                                                               //  get cpu arch. 32/64 bit
+  arch = unbuff.machine;
+  fid1 = popen("lsb_release -d","r");                                           //  get Linux flavor and release
+  if (fid1) {
+    ii = fscanf(fid1,"%s %s %s",OS1,OS2,OS3);
+    pclose(fid1);
+  }
 
-   printz("\n*** zappcrash: %s %s %s %s %s %s \n",
-               arch, OS2, OS3, zappvers, build_date_time, message);
+  printz("\n*** zappcrash: %s %s %s %s %s %s \n",arch, OS2, OS3, zappvers, build_date_time, message);
 
-   nstack = backtrace(stacklist,nstack);                                         //  get backtrace data
-   if (nstack <= 0) zexit("zappcrash backtrace() failure");
-   if (nstack > 100) nstack = 100;
+  nstack = backtrace(stacklist,nstack);                                        //  get backtrace data
+  if (nstack <= 0) zexit("zappcrash backtrace() failure");
+  if (nstack > 100) nstack = 100;
 
-   fid1 = fopen("zbacktrace","w");                                               //  open backtrace data output file
-   if (! fid1) zexit("zappcrash fopen() failure");
+  fid1 = fopen("zbacktrace","w");                                              //  open backtrace data output file
+  if (! fid1) zexit("zappcrash fopen() failure");
 
-   fd = fileno(fid1);
-   backtrace_symbols_fd(stacklist,nstack,fd);                                    //  write backtrace data
-   fclose(fid1);                                                                 //  (use of malloc() is avoided)
+  fd = fileno(fid1);
+  backtrace_symbols_fd(stacklist,nstack,fd);                                   //  write backtrace data
+  fclose(fid1);                                                                //  (use of malloc() is avoided)
 
-   fid1 = fopen("zbacktrace","r");                                               //  open backtrace data file
-   if (! fid1) zexit("zappcrash fopen() failure");
+  fid1 = fopen("zbacktrace","r");                                              //  open backtrace data file
+  if (! fid1) zexit("zappcrash fopen() failure");
 
-   fid2 = fopen("zappcrash","w");                                                //  open zappcrash output file
-   if (! fid2) zexit("zappcrash fopen() failure");
+  fid2 = fopen("zappcrash","w");                                               //  open zappcrash output file
+  if (! fid2) zexit("zappcrash fopen() failure");
 
-   fprintf(fid2,"\n*** zappcrash: %s %s %s %s %s %s \n",
-                     arch, OS2, OS3, zappvers, build_date_time, message);
-   fprintf(fid2,"*** please send to kornelix@posteo.de *** \n");
+  fprintf(fid2,"\n*** zappcrash: %s %s %s %s %s %s \n",
+                   arch, OS2, OS3, zappvers, build_date_time, message);
+  fprintf(fid2,"*** please send to kornelix@posteo.de *** \n");
 
-   cc = readlink("/proc/self/exe",progexe,300);                                  //  get own program path
-   if (cc > 0) progexe[cc] = 0;                                                  //  readlink() quirk
-   else {
-      fprintf(fid2,"progexe not available \n");
-      Flinenos = 0;
-   }
+  cc = readlink("/proc/self/exe",progexe,300);                                 //  get own program path
+  if (cc > 0) progexe[cc] = 0;                                                 //  readlink() quirk
+  else {
+    fprintf(fid2,"progexe not available \n");
+    Flinenos = 0;
+  }
 
-   err = Qshell(0,0,"which addr2line >> /dev/null");                             //  check if addr2line() available
-   if (err) {
-      fprintf(fid2,"addr2line not available \n");
-      Flinenos = 0;
-   }
+  err = Qshell(0,0,"which addr2line >> /dev/null");                            //  check if addr2line() available
+  if (err) {
+    fprintf(fid2,"addr2line not available \n");
+    Flinenos = 0;
+  }
 
-   for (ii = 0; ii < nstack; ii++)                                               //  loop backtrace records
-   {
-      pp1 = pp2 = 0;
-      fgets_trim(buff1,300,fid1);                                                //  read backtrace line
-      if (! Flinenos) goto output;
-      pfunc = 0;
-      pp1 = strstr(buff1,"+0x");                                                 //  new format (+0x12345...)
-      if (pp1) pp2 = strchr(pp1,')');
-      else {
-         pp1 = strstr(buff1,"[0x");                                              //  old format [0x12345...]
-         if (pp1) pp2 = strchr(pp1,']');
-      }
-      if (! pp1 || ! pp2) goto output;                                           //  cannot parse
-      dlim = *pp2;
-      *pp2 = 0;
-      strncpy0(hexaddr,pp1+1,20);
-      *pp2 = dlim;
-      snprintf(buff2,300,"addr2line -i -e %s %s",progexe,hexaddr);               //  convert to source program
-      fid3 = popen(buff2,"r");                                                   //    and line number
-      if (! fid3) goto output;
-      pfunc = fgets(buff2,300,fid3);
-      pclose(fid3);
-      if (! pfunc) goto output;
-      cc = strlen(pfunc);
-      if (cc < 10) goto output;
-      if (pfunc[cc-1] < ' ') pfunc[cc-1] = 0;                                    //  remove tailing \n if present
-      strncatv(buff1,300,"\n--- ",pfunc,null);
-   output:
-      fprintf(fid2,"%s \n",buff1);                                               //  output
-   }
+  for (ii = 0; ii < nstack; ii++)                                              //  loop backtrace records
+  {
+    pp1 = pp2 = 0;
+    fgets_trim(buff1,300,fid1);                                                //  read backtrace line
+    if (! Flinenos) goto output;
+    pfunc = 0;
+    pp1 = strstr(buff1,"+0x");                                                 //  new format (+0x12345...)
+    if (pp1) pp2 = strchr(pp1,')');
+    else {
+       pp1 = strstr(buff1,"[0x");                                              //  old format [0x12345...]
+       if (pp1) pp2 = strchr(pp1,']');
+    }
+    if (! pp1 || ! pp2) goto output;                                           //  cannot parse
+    dlim = *pp2;
+    *pp2 = 0;
+    strncpy0(hexaddr,pp1+1,20);
+    *pp2 = dlim;
+    snprintf(buff2,300,"addr2line -i -e %s %s",progexe,hexaddr);               //  convert to source program
+    fid3 = popen(buff2,"r");                                                   //    and line number
+    if (! fid3) goto output;
+    pfunc = fgets(buff2,300,fid3);
+    pclose(fid3);
+    if (! pfunc) goto output;
+    cc = strlen(pfunc);
+    if (cc < 10) goto output;
+    if (pfunc[cc-1] < ' ') pfunc[cc-1] = 0;                                    //  remove tailing \n if present
+    strncatv(buff1,300,"\n--- ",pfunc,null);
+output:
+    fprintf(fid2,"%s \n",buff1);                                               //  output
+  }
 
-   fclose(fid1);
-   fclose(fid2);
-   Qshell(0,0,"rm zbacktrace");
-   Qshell(0,0,"cat zappcrash");
-   Qshell(0,0,"mv zappcrash $(xdg-user-dir DESKTOP)/%s-zappcrash",zappvers);     //  move zappcrash file to desktop
-   zexit("exit zappcrash");
+  fclose(fid1);
+  fclose(fid2);
+  Qshell(0,0,"rm zbacktrace");
+  Qshell(0,0,"cat zappcrash");
+  Qshell(0,0,"mv zappcrash $(xdg-user-dir DESKTOP)/%s-zappcrash",zappvers);     //  move zappcrash file to desktop
+  zexit("exit zappcrash");
 }
 
 
