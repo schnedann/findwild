@@ -235,6 +235,10 @@
 
 namespace zfuncs
 {
+
+   constexpr static size_t const maxpathlength = 200;
+   constexpr static size_t const maxappnamelength = 40;
+
    struct timeb   startime;                                                      //  app startup time
    GdkDisplay     *display;                                                      //  workstation (KB, mouse, screen)
    GdkScreen      *screen;                                                       //  screen, N monitors
@@ -249,10 +253,14 @@ namespace zfuncs
    cchar          *appboldfont = "sans bold 10";
    cchar          *appmonofont = "mono 10";
    cchar          *appmonoboldfont = "mono bold 10";
-   char           zappname[40] = "undefined";                                    //  appname without version
-   char           zappvers[40] = "undefined";                                    //  appname-N.N
-   char           zprefix[200], zdatadir[200], zdocdir[200];                     //  app folders
-   char           zlocalesdir[200], zimagedir[200], zhomedir[200];
+   char           zappname[maxappnamelength] = "undefined";                      //  appname without version
+   char           zappvers[maxappnamelength] = "undefined";                      //  appname-N.N
+   char           zprefix[maxpathlength];                                        //  app folders
+   char           zdatadir[maxpathlength];
+   char           zdocdir[maxpathlength];
+   char           zlocalesdir[maxpathlength];
+   char           zimagedir[maxpathlength];
+   char           zhomedir[maxpathlength];
    char           zlocale[8] = "en";                                             //  "lc" or "lc_RC"
    pthread_t      tid_main = 0;                                                  //  main() thread ID
    int            vmenuclickposn;                                                //  Vmenu image click posn. 0-100
@@ -263,7 +271,6 @@ namespace zfuncs
 }
 
 using namespace zfuncs;
-
 
 /********************************************************************************
    system-level utility functions
