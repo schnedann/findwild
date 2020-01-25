@@ -1,0 +1,15 @@
+Package: findwild
+Version: 2.7
+Architecture: amd64
+Section: utils
+Installed-Size: 1592
+Maintainer: Mike Cornelison <kornelix@posteo.de>
+Priority: optional
+Homepage: https://kornelix.net/
+Depends: libc6, binutils
+Description: Search for file names and/or contents matching wildcard patterns. 
+ Specify multiple wildcards for the search path, file name, and file contents. 
+ Search files from a prior search with modified criteria (narrow the search). 
+ Recall and re-use multiple prior searches.
+
+

@@ -1,0 +1,137 @@
+Findwild User Guide
+
+Introduction
+
+   Findwild is (yet another) program to search for files, but it works differently.
+   Findwild offers the following search criteria:
+
+     * directory path to search, with multiple wildcards anywhere
+     * file name(s) to search for, with multiple wildcards anywhere
+     * file name(s) to exclude, with multiple wildcards anywhere
+     * file content string(s) to search for, with multiple wildcards anywhere
+     * file content string(s) to exclude, with multiple wildcards anywhere
+     * file modification date within a desired range
+     * your choice of string delimiters (defaults provided)
+     * search the list of files from a prior search (stepwise reduce the results)
+     * optionally search for file names without regard for upper/lower case letters
+     * optionally search for strings without regard for upper/lower case letters
+
+   Findwild is especially useful for programmers needing to search for symbolic names. 
+   The search criteria can be tuned to narrow the search by excluding unwanted paths, 
+   files, and strings found by an initial search. Combinations of wanted and unwanted 
+   strings can be specified at the file and record level. A new search can be initiated 
+   using the results from a prior search to speed things up.
+
+License and Warranty
+   Findwild is a free Linux program licensed under the GNU General Public License v.3 
+   (Free Software Foundation). Findwild is not warranted for any purpose whatsoever, but 
+   if you find a bug, I will try to fix it.
+
+Origin and Contact
+   Findwild originates from the author's web site at: https://kornelix.net/
+   Other web sites may offer it for download. Modifications may have been made.
+   If you have questions, suggestions or a bug to report: kornelix@posteo.de
+
+Screenshot
+   +image: screenshot.png
+
+Findwild usage
+
+   Refer to the above screenshot as needed to better understand the following.
+
+   The toolbar [search] button starts a dialog where you enter search criteria. You can 
+   use wildcards * and ? in all search criteria. * matches any string, including a zero 
+   length string, and ? matches any single character. You can make multiple entries for 
+   search and ignore files and strings, separated with blanks. If desired, enter a date 
+   range using either days ago (-9999 to 0) or yyyy-mm-dd. When done, use [search all] 
+   to begin the search.
+
+   Findwild selects and reports files according to the following rules:
+
+     * find all files matching the search path and any search file
+     * discard files not having a modification date within the specified range
+     * if file name matches any ignore file, discard the file
+     * read these files and find all search strings and ignore strings
+     * discard files not matching the chosen "find files containing" option:
+        * contain any of the given search strings
+        * (or) contain all of the given search strings
+        * (or) contain all of them within the same record
+     * discard files matching the chosen "ignore files containing" option:
+        * contains any of the given ignore strings
+        * (or) contains all of the given ignore strings
+        * (or) contains all of them in the same record
+     * cancel matching records meeting "ignore matching records" condition:
+        * matching record has any ignore string
+        * (or) matching record has all ignore strings
+     * if all matching records are canceled, then the file is discarded
+
+   Wildcard file names used for searching are made from search path + search file(s).
+   If this results in **  where they are joined, then  *  is substituted.
+
+   You may optionally ignore upper/lower case for matching file names and search strings 
+   by checking the corresponding boxes.
+
+   Example: search path = /usr/include/*  and search file = *.h
+   The combined search string of  /usr/include/*.h  will include files such as
+      /usr/include/err.h
+      /usr/include/gtk-2.0/gdk/gdkgc.h
+   Note that * matches any number of intermediate directories.
+
+   The search file(s) may also include subdirectories, e.g. "/usr/*gtk*/"  and  "*.h" 
+   is a legitimate combination that will search all files named "*.h" within the search 
+   path and within any intermediate directory beginning with "gtk".
+
+   Delimiters define and separate strings in the searched files. Each file string, so 
+   defined, will be matched against the search and ignore strings. If you use no 
+   delimiters, then each file record (row of text) is treated as one string for matching.
+
+   Note that wildcards are needed to make findwild work like other file search programs:
+   A record containing "xxx#aaabbbbcc@yyy" will not match "abbb" but will match "*abbb*"
+   and "*a*bcc*" (assuming that '#' and '@' are included in the delimiters list).
+
+   It makes no sense to include a delimiter character in the search string. If you need 
+   to search for strings containing any of the default delimiters, then remove these 
+   delimiters for this search. The default delimiters work as needed for most cases.
+
+   The default delimiters are restored each time findwild is started. If modified, the 
+   modifications apply during the current session. Other dialog inputs are restored from 
+   the prior session.
+
+   If "list matching records" is checked, the output includes all records with matching 
+   strings. Otherwise only file names are reported along with the count of matching 
+   records. Up to 99 records preceding matching records may be listed, and any number of 
+   records following matching records. Overlapping outputs are consolidated so that no 
+   records are output more than once.
+
+   The toolbar [save] button saves the search results to a file. [print] prints them on 
+   the default printer. [clear] clears the output window. [kill] stops a running search.
+
+   The button [search hits] uses the list of files found by the previous search instead 
+   of using the search path and file inputs. If you are narrowing the search criteria to 
+   home in on the desired files, this can speed things up.
+
+   The search criteria can be saved to a file with the [save file] button, and reloaded 
+   later with the [load file] button, after which it can be edited as needed.
+
+   \_Note on file types
+   It would be logical to automatically exclude non-text files from the search. It takes 
+   time to reliably determine if a file is a text file. I experimented and concluded that 
+   it is usually faster to simply process all files. This could produce meaningless 
+   accidental matches for binary files. It is better to specify file types in the search 
+   criteria, e.g. "*.cc", "*.html"  etc.
+
+   \_Uninstall
+   Debian package: use command: sudo apt remove findwild
+   Tarball: use command: sudo make uninstall
+   Appimage package: use command: findwild -uninstall
+
+   \_Phone home
+   Findwild will occasionally send a message to its web host for usage statistics.
+   No information is kept that could be associated with a person or location.
+
+   \_Search for strings containing blanks
+   To search for "string with blanks", enter all three words (without quotes) as search
+   strings, and check the box: "all in same record". This will of course also find
+   "string with some blanks" and "blanks with string".  
+
+

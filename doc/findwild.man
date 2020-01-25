@@ -1,0 +1,29 @@
+.TH FINDWILD 1 2013-07-18 "Linux" "findwild man page"
+
+.SH NAME
+ findwild - searches files using multiple search parameters that can
+ have multiple wildcards
+
+.SH SYNOPSIS
+ \fBfindwild\fR
+
+.SH OVERVIEW
+ Findwild offers the following search criteria:
+   + directory path to search, with multiple wildcards placed anywhere
+   + file name(s) to search for, with multiple wildcards anywhere
+   + file name(s) to exclude, with multiple wildcards anywhere
+   + file content string(s) to search for, with multiple wildcards anywhere
+   + file content string(s) to exclude, with multiple wildcards anywhere
+   + file modification date within a desired range
+   + flexible delimiters for the strings to be searched (defaults provided)
+   + search files found by a previous search (narrow the search)
+
+.SH SEE ALSO
+ The online user manual is available using the help toolbar button.
+ This manual explains findwild operation in great detail.
+
+.SH AUTHORS
+ Written by Michael Cornelison <kornelix@posteo.de>
+ https://kornelix.net
+
+

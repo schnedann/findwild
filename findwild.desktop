@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=findwild
+GenericName=Wildcard File Search
+Comment=GUI search for wildcard paths/files/strings
+Categories=Utility;Archiving
+Type=Application
+Terminal=false
+Exec=findwild
+Icon=/usr/share/findwild/icons/findwild.png

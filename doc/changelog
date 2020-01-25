@@ -1,0 +1,109 @@
+findwild Change Log
+===================
+
+2020.01.01  v.2.7
++ added anonymous usage statistics
++ bugfix: search for strings containing " now works OK.
+
+2019.08.01  v.2.6
++ User Guide update
+
+2019.02.10  v.2.5
++ make matching words in report bold
++ Update usage counter on web host [anonymous]
+
+2018.08.22  v.2.4
++ appimage package
+
+2018.03.29  v.2.3
++ Internal code cleanups.
+
+2016.01.03  v.2.2
++ Stop meaningless error messages from latest GTK changes.
+
+2013.12.12  v.2.1
++ Support listing N lines before and/or N lines after each matching line.
+
+2013.07.18  v.2.0
++ Show text file line numbers for matched lines being listed.
+
+2013.03.01  v.1.9
++ The default delimiter list is applied whenever the application is
+  started, even if altered in a previous session. Problems here are
+  too easy to oversee, and excess delimiters are easy to see since
+  any search string containing a delimiter is flagged for the user.
+
+2013.01.13  v.1.8
++ The option was added to ignore case for file name matching.
+
+2013.01.04  v.1.7
++ The option was added to ignore case for search string matching.
+
+2012.11.01  v.1.6
++ Search dialog preserves user inputs across sessions.
++ Replaced deprecated GTK functions with new versions.
+
+2012.03.22  v.1.5
++ Add the option to list matching records with up to 99 prior records.
++ Bugfix: killing an ongoing search sometimes caused application lockup.
+
+2012.02.01  v.1.4
++ Findwild was converted to use GTK3 and Cairo. It will no longer
+  build or install on older Linux distros lacking these libraries.
++ RPM packages are built using Fedora and rpmbuild instead of alien.
+
+2011.10.20  v.1.3
++ Code cleanup for compiler warnings from GCC 4.6 (Ubuntu 11.10).
++ Remove use of GTK functions within threads.
++ DEB package is now made by dkpg and RPM is made from DEB via alien.
+
+2010.10.23  v.1.2
++ Search criteria can be loaded from a file, edited, used for searching, 
+  and saved back to a file. 
++ A command line file parameter can be used for initial search criteria.
++ Bugfix: 0 search strings with 1+ ignore strings produced zero hits
+  instead of all the matching file names.
+
+2008.06.01  v.1.1
++ change from build script to conventional makefile
+
+2008.04.20  v.10
++ code changes for compatibility with recent gcc, c-lib, and GTK2
+
+2008.02.10  v.09
++ when searching previous results, still apply file name criteria
+
+2008.02.09  v.08
++ search files from previous search result
++ fix crash if search file(s) input is left blank
+
+2008.01.29  v.07
++ separate build scripts for downloaders and package builders
++ code changes to get application directories from build script
+
+2008.01.01  v.06
++ build script allows user choice of install location
+
+2007.11.15  v.05
++ more flexible logic for search and ignore strings
++ notify user if search and ignore strings conflict with delimiter list
++ corrected bug affecting combo box drop-down list data retention
++ new GTK requirement: if (! g_thread_supported()) g_thread_init(0);
+
+2007.11.12  v.04
++ locale related library changes 
+
+2007.08.03  v.03
++ allow multiple search files and search strings
++ allow multiple ignore files and ignore strings
++ allow search for file modification date within a given range
++ search progress tracking
+
+2007.07.05  v.02
++ add ignore files option
++ follow Linux convention for app files in /home/username/.findwild/
++ replace private logic with new zdialog_cb_xxx functions
+
+2007.06.06  v.01  initial release
+
+

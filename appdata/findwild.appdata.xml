@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2014-2020 Michael Cornelison <kornelix@posteo.de> -->
+<component type="desktop-application">
+ <id>findwild</id>
+ <metadata_license>CC0</metadata_license>
+ <project_license>GPL-3.0+</project_license>
+ <name>findwild</name>
+ <summary>Photo Editor and Collection Manager</summary>
+
+ <description>
+  <p>
+   Edit photos and manage a large collection. 
+   Includes thumbnail browser/navigator, RAW file conversion, a comprehensive 
+   set of edit functions working in 24-bit color, edit selected image objects 
+   or areas independently from background, area copy/paste within and across 
+   images, file versioning, batch operations, scriptable batch editing, HDR, 
+   HDF, panorama, image stacking, photomontage, albums (alternate views), 
+   slide show with animated transitions and zoom, metadata edit and report, 
+   image search using any metadata and/or folder/file names, geographic 
+   maps with clickable markers to show images at location.
+  </p>
+ </description>
+
+ <screenshots>
+   <screenshot type="default">
+     <caption>findwild views</caption>
+     <image>https://kornelix.net/findwild/images/findwild.jpg</image>
+   </screenshot>
+ </screenshots>
+
+ <url type="homepage">https://kornelix.net</url>
+
+</component>
+
+
+
