@@ -4839,9 +4839,9 @@ int zinitapp(cchar *appvers, cchar *homedir)                                    
       snprintf(oldlog,199,"%s/logfile.old",zhomedir);
       err = stat(logfile,&statb);
       if (! err) rename(logfile,oldlog);                                         //  rename old log file
-      fid = freopen(logfile,"a",stdout);                                         //  redirect output to log file
+      fid = freopen(logfile,"w",stdout);                                         //  redirect output to log file
       bool fail = nullptr==fid;
-      fid = freopen(logfile,"a",stderr);
+      fid = freopen(logfile,"w",stderr);
       fail |= nullptr==fid;
       if (fail) printz("*** cannot redirect stdout and stderr \n");
    }
