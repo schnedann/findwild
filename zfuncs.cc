@@ -4402,32 +4402,31 @@ int pvlist_sort(pvlist *pv)
 //  Random number generators with explicit context
 //  and improved randomness over a small series.
 //  Benchmark: lrandz 0.012 usec  drandz 0.014 usec  3.3 GHz Core i5
-
-int lrandz(int64 *seed)                                                          //  returns 0 to 0x7fffffff
-{
-   *seed = *seed ^ (*seed << 17);
-   *seed = *seed ^ (*seed << 20);
-   return nrand48((unsigned int16 *) seed);
+long int nrand48(unsigned short xsubi[3]);
+uint32 lrandz(uint64 *seed){                                                     //  returns 0 to 0x7fffffff
+  //Shuffe seed (for whatever reason)
+  *seed = *seed ^ (*seed << 17);
+  *seed = *seed ^ (*seed << 20);
+  return nrand48((uint16*) seed);
 }
 
-int lrandz()                                                                     //  implicit seed, repeatable sequence
-{
-   static int64   seed = 12345678;
+uint32 lrandz(){                                                                 //  implicit seed, repeatable sequence
+   static uint64 seed = 12345678;
    return lrandz(&seed);
 }
 
-double drandz(int64 *seed)                                                       //  returns 0.0 to 0.99999...
-{
-   *seed = *seed ^ (*seed << 17);
-   *seed = *seed ^ (*seed << 20);
-   return erand48((unsigned int16 *) seed);
+/*
+double drandz(int64 *seed){                                                      //  returns 0.0 to 0.99999...
+  //Shuffe seed (for whatever reason)
+  *seed = *seed ^ (*seed << 17);
+  *seed = *seed ^ (*seed << 20);
+  return erand48((uint16*) seed);
 }
 
-double drandz()                                                                  //  automatic seed, volatile
-{
+double drandz(){                                                                 //  automatic seed, volatile
    static int64 seed = get_seconds();
    return drandz(&seed);
-}
+}*/
 
 
 /********************************************************************************
@@ -5700,8 +5699,8 @@ void appruns_update()
    if (fid && fage < 24) return;                                                 //  < 1 day since last update
 
    if (! fid) {                                                                  //  appruns not found or invalid
-      random = 0x100000000 * drandz();                                           //  uuid: random 8-digit hex number
-      snprintf(uuid,12,"%08llx",random);                                         //  (range 4.2 billion)
+      random = lrandz();                                                         //  uuid: random 8-digit hex number
+      snprintf(uuid,12,"%08lx",random);                                          //  (range 4.2 billion)
       runs = 0;                                                                  //  run count
       permit = 1;                                                                //  permit phone home
    }
@@ -5787,8 +5786,8 @@ void phone_home_allow(GtkWidget *parent)
    }
 
    if (! fid) {                                                                  //  appruns not found or invalid
-      random = 0x100000000 * drandz();                                           //  random 8-digit hex number
-      snprintf(uuid,12,"%08llx",random);                                         //  (range 4.2 billion)
+      random = lrandz();                                                         //  random 8-digit hex number
+      snprintf(uuid,12,"%08lx",random);                                          //  (range 4.2 billion)
       runs = 0;                                                                  //  run count
       permit = 1;                                                                //  permit phone home
    }
@@ -7546,7 +7545,7 @@ void gmenuznames::update_configfile()
    using namespace gmenuznames;
 
    static int     ftf = 1;
-   int64          DT;
+   uint64         DT;
    int            err, ii, me;
    char           *pp;
    int            pposx, pposy;
@@ -7557,7 +7556,7 @@ void gmenuznames::update_configfile()
    if (ftf) {                                                                    //  initialize random generator
       ftf = 0;
       DT = time(null);
-      drandz(&DT);
+      lrandz(&DT);
    }
 
    if (pWin)
@@ -8792,7 +8791,7 @@ zdialog * zdialog_new(cchar *title, GtkWidget *parent, ...)                     
    zd->dialog = dialog;                                                          //  dialog window
    zd->title = zstrdup(title);                                                   //  dialog title
    zd->parent = parent;                                                          //  parent window
-   zd->sentinel1 = zdsentinel | (lrandz() & 0x0000FFFF);                         //  validity sentinels
+   zd->sentinel1 = zdsentinel | (lrandz() & 0x0000FFFFu);                         //  validity sentinels
    zd->sentinel2 = zd->sentinel1;                                                //  fixed part + random part
    zd->uniqueID = uniqueID++;                                                    //  increment unique ID
    zd->eventCB = 0;                                                              //  no user event callback function

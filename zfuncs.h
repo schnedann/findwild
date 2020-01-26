@@ -48,6 +48,7 @@
 #define PIXBUF GdkPixbuf
 #define GDKCOLOR GdkColorspace
 
+/*
 #define  int8   char                                                             //  number types
 #define  int16  short
 #define  int32  int
@@ -56,9 +57,33 @@
 #define  uint16  unsigned short
 #define  uint32  unsigned int
 #define  uint64  unsigned long long
-#define  uchar  unsigned char
+#define  uchar  unsigned char*/
 #define  cchar  const char
 #define  VOL volatile
+
+#ifdef __cplusplus
+using  int8    = int8_t    ;                  //  number types
+using  int16   = int16_t   ;
+using  int32   = int32_t   ;
+using  int64   = int64_t   ;                  //  long long is always 64 bits
+using  uint8   = uint8_t   ;
+using  uint16  = uint16_t  ;
+using  uint32  = uint32_t  ;
+using  uint64  = uint64_t  ;
+using  uchar   = uint8     ;
+//using  cchar   = const signed char;
+#else
+typedef int8_t       int8  ;                  //  number types
+typedef int16_t      int16 ;
+typedef int32_t      int32 ;
+typedef int64_t      int64 ;                  //  long long is always 64 bits
+typedef uint8_t      uint8 ;
+typedef uint16_t     uint16;
+typedef uint32_t     uint32;
+typedef uint64_t     uint64;
+typedef uint8_t      uchar ;
+//typedef const signed char cchar ;
+#endif
 
 #define  wstrerror(err) strerror(WEXITSTATUS(err))                               //  get text status for child process
 
@@ -78,7 +103,6 @@
 #define  NOP
 
 //  trace execution: source file, function, line no, caller address
-
 #define TRACE trace(__FILE__,__FUNCTION__,__LINE__,__builtin_return_address(0));
 
 //  system functions ============================================================
@@ -258,11 +282,12 @@ int pvlist_sort(pvlist *pv);                                                    
 
 //  random number functions =====================================================
 
-int lrandz(int64 * seed);                                                        //  returns 0 to 0x7fffffff
-int lrandz();                                                                    //  built-in seed
-double drandz(int64 * seed);                                                     //  returns 0.0 to 0.99999...
+uint32 lrandz(uint64* seed);                                                     //  returns 0 to 0x7fffffff
+uint32 lrandz();                                                                 //  built-in seed
+/*
+double drandz(uint64* seed);                                                     //  returns 0.0 to 0.99999...
 double drandz();                                                                 //  built-in seed
-
+*/
 //  spline curve-fitting functions ==============================================
 
 void spline1(int nn, float *dx, float *dy);                                      //  define a curve using nn data points
