@@ -33,8 +33,8 @@
 #include <cstdio>
 #include <cstring>
 #include <ctype.h>
-#include <math.h>
-#include <stdarg.h>
+#include <cmath>
+#include <cstdarg>
 #include <fcntl.h>
 #include <pthread.h>
 #include <signal.h>
