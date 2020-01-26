@@ -110,7 +110,7 @@ double CPUtime2();                                                              
 double jobtime();                                                                //   " include all threads + subprocesses
 void compact_time(const time_t DT, char *compactDT);                             //  time_t DT to yyyymmddhhmmss
 void pretty_datetime(const time_t DT, char *prettyDT);                           //  time_t DT to yyyy-mm-dd hh:mm:ss
-int  parseprocfile(cchar *pfile, cchar *pname, double *value, ...);              //  get data from /proc file
+int  parseprocfile(cchar *pfile, cchar *pname, size_t *value, ...);              //  get data from /proc file
 int  parseprocrec(char *prec, int field, double *value, ...);                    //  get data from /proc file record
 int  coretemp();                                                                 //  get CPU core temperature, deg. C
 int  disktemp(char *disk);                                                       //  get disk temp, e.g. "/dev/sda"

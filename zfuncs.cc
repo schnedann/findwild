@@ -278,37 +278,47 @@ using namespace zfuncs;
 
 //  malloc() free() and strdup() wrappers with added functionality
 
-void * zmalloc(size_t cc)
-{
-   double     memavail;
-   double     fcc;
-   static int ftf = 1;
-          int memcheck = 1;
+/**
+ * @brief zmalloc -
+ * @param cc
+ * @return
+ */
+void * zmalloc(size_t cc){
+  static constexpr uint64 const binary_k = 1024;
+  static constexpr uint64 const binary_M = 1024*1024;
 
-   if (ftf) {                                                                    //  first call
-      ftf = 0;
-      parseprocfile("/proc/meminfo","MemAvailable:",&memavail,0);                //  'MemAvailable' available?
-      if (! memavail) memcheck = 0;                                              //  no, memory check not possible
+   size_t      memavail;
+   size_t      fcc;
+   static bool once = true;
+   static bool memcheck = true;
+
+   parseprocfile("/proc/meminfo","MemAvailable:",&memavail,0);                   //  'MemAvailable' available?
+   if(once) {                                                                    //  first call
+      once = false;
+      if(0==memavail) memcheck = false;                                          //  no, memory check not possible
    }
 
-   if (memcheck && (cc > 10000))                                                   //  large block
-   {
-      parseprocfile("/proc/meminfo","MemAvailable:",&memavail,0);                //  free memory (+ cache) KB units
-      memavail = memavail / 1024;                                                //  do compare in MB units
-      fcc = cc / 1024 / 1024;
-      if (memavail - fcc < 300) zexit("OUT OF MEMORY");                          //  < 300 MB, quit before OOM killer
+   if (memcheck && (cc > 10000)){                                                //  large block
+      memavail = memavail / binary_k;                                            //  do compare in MB units
+      fcc = cc / binary_M;
+      if ((memavail - fcc) < 300) zexit("OUT OF MEMORY");                        //  < 300 MB, quit before OOM killer
    }
 
    void *pp = malloc(cc);                                                        //  allocate memory
-   if (nullptr==pp) zexit("OUT OF MEMORY");
+   if(nullptr==pp) zexit("OUT OF MEMORY");
 
    memset(pp,0,cc);                                                              //  clear to zero
    return pp;
 }
 
 
+/**
+ * @brief zfree
+ * @param puser
+ */
 void zfree(void *puser){
-   return free(puser);
+  if(nullptr!=puser) free(puser);
+  return;
 }
 
 /**
@@ -322,7 +332,7 @@ char *zstrdup(cchar *string, int addcc){
     zappcrash("zstrdup() null arg");
   }
   char *pp = (char *) zmalloc(strlen(string) + 1 + addcc);                      //  add additional chars.
-  strcpy(pp,string);
+  if(nullptr!=pp) strcpy(pp,string);
   return pp;
 }
 
@@ -938,16 +948,20 @@ void pretty_datetime(const time_t DT, char *prettyDT)
 
 /********************************************************************************/
 
-//  Read and parse /proc file with records formatted "parmname xxxxxxx"
-//  Find all requested parameters and return their numeric values
-
-int parseprocfile(cchar *pfile, cchar *pname, double *value, ...)                //  EOL = 0
-{
+/**
+ * @brief parseprocfile - Read and parse /proc file with records formatted "parmname xxxxxxx"
+ *                        Find all requested parameters and return their numeric values
+ * @param pfile
+ * @param pname
+ * @param value
+ * @return
+ */
+int parseprocfile(cchar *pfile, cchar *pname, size_t *value, ...){               //  EOL = 0
    FILE        *fid;
    va_list     arglist;
    char        buff[1000];
    const char  *pnames[20];
-   double      *values[20];
+   size_t      *values[20];
    int         ii, fcc, wanted, found;
 
    pnames[0] = pname;                                                            //  1st parameter
@@ -955,40 +969,37 @@ int parseprocfile(cchar *pfile, cchar *pname, double *value, ...)               
    *value = 0;
 
    va_start(arglist,value);
-
-   for (ii = 1; ii < 20; ii++)                                                   //  get all parameters
-   {
+   for (ii = 1; ii < 20; ++ii){                                                  //  get all parameters
       pnames[ii] = va_arg(arglist,char *);
       if (! pnames[ii]) break;
-      values[ii] = va_arg(arglist,double *);
+      values[ii] = va_arg(arglist,size_t *);
       *values[ii] = 0;                                                           //  initialize to zero
    }
-
    va_end(arglist);
 
-   if (ii == 20) zappcrash("parseProcFile, too many fields");
+   if(ii == 20){
+     zappcrash("parseProcFile, too many fields");
+   }
    wanted = ii;
    found = 0;
 
    fid = fopen(pfile,"r");                                                       //  open /proc/xxx file
-   if (! fid) return 0;
+   if(nullptr!=fid){
+     while ((fgets(buff,999,fid))){                                              //  read record, "parmname nnnnn"
+        for (ii = 0; ii < wanted; ii++){                                         //  look for my fields
+           fcc = strlen(pnames[ii]);
+           if (strmatchN(buff,pnames[ii],fcc)) {
+              *values[ii] = atoi(buff+fcc);                                      //  return value
+              ++found;
+              break;
+           }
+        }
 
-   while ((fgets(buff,999,fid)))                                                 //  read record, "parmname nnnnn"
-   {
-      for (ii = 0; ii < wanted; ii++)
-      {                                                                          //  look for my fields
-         fcc = strlen(pnames[ii]);
-         if (strmatchN(buff,pnames[ii],fcc)) {
-            *values[ii] = atof(buff+fcc);                                        //  return value
-            found++;
-            break;
-         }
-      }
+        if (found == wanted) break;                                              //  stop when all found
+     }
 
-      if (found == wanted) break;                                                //  stop when all found
+     fclose(fid);
    }
-
-   fclose(fid);
    return found;
 }
 
