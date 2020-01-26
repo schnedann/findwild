@@ -560,91 +560,6 @@ void sighandler(int signal){
   exit(0);
 }
 
-
-/********************************************************************************/
-
-//  Implement the TRACE macro.
-//  Trace program execution by function and source code line number.
-//  tracedump() dumps last 50 uses of TRACE macro, latest first.
-
-namespace tracenames{
-   static constexpr size_t const num_buffers  =  50;
-   static constexpr size_t const filename_max = 100;
-   static constexpr size_t const funcname_max =  60;
-   char  filebuff[num_buffers][100+1];                                                      //  last 50 TRACE calls
-   char  funcbuff[num_buffers][60+1];
-   int   linebuff[num_buffers];
-   void  *addrbuff[num_buffers];
-   size_t idx = 0;
-   bool once = true;
-};
-
-/**
- * @brief trace - Args are source file, source function name, source code line number,
- *                caller address. These all come from the GCC compiler and TRACE macro.
- * @param file
- * @param func
- * @param line
- * @param addr
- */
-void trace(cchar *file, cchar *func, int line, void *addr){
-  using namespace tracenames;
-
-  if(once){
-    once = false;
-    for (size_t ii = 0; ii < num_buffers; ++ii) {
-      filebuff[ii][filename_max] = 0;
-      funcbuff[ii][funcname_max] = 0;
-      linebuff[ii] = 0;
-      addrbuff[ii] = 0;
-    }
-  }
-
-  //  same as last call, don't duplicate
-  if(!(line == linebuff[idx] && strmatch(func,funcbuff[idx]))){
-    if (++idx >= num_buffers) idx = 0;                                                     //  add data to list
-    strncpy(&filebuff[idx][0],file,filename_max);
-    strncpy(&funcbuff[idx][0],func,funcname_max);
-    linebuff[idx] = line;
-    addrbuff[idx] = addr;
-  }
-  return;
-}
-
-/**
- * @brief tracedump - dump trace records to STDOUT
- */
-void tracedump(){
-  using namespace tracenames;
-
-  FILE     *fid;
-  size_t    kk;
-
-  printz(" *** tracedump *** \n");
-
-  kk = idx;
-  while (linebuff[kk]) {
-    printz("TRACE %s %s %d %p \n",&filebuff[kk][0],&funcbuff[kk][0],linebuff[kk],addrbuff[kk]);
-    if (--kk == idx) break;
-  }
-
-  fid = fopen("tracedump","w");
-  if(nullptr!=fid){
-    fprintf(fid, " *** tracedump *** \n");
-    kk = idx;
-    while (linebuff[kk]) {
-      fprintf(fid, "TRACE %s %s %d %p \n",&filebuff[kk][0],&funcbuff[kk][0],linebuff[kk],addrbuff[kk]);
-      if (--kk == idx) break;
-    }
-    fclose(fid);
-  }else{
-    perror("tracedump fopen() failure \n");
-  }
-
-  return;
-}
-
-
 /********************************************************************************/
 
 //  restart the current program as root user (after sudo success)
@@ -4414,20 +4329,6 @@ uint32 lrandz(){                                                                
    static uint64 seed = 12345678;
    return lrandz(&seed);
 }
-
-/*
-double drandz(int64 *seed){                                                      //  returns 0.0 to 0.99999...
-  //Shuffe seed (for whatever reason)
-  *seed = *seed ^ (*seed << 17);
-  *seed = *seed ^ (*seed << 20);
-  return erand48((uint16*) seed);
-}
-
-double drandz(){                                                                 //  automatic seed, volatile
-   static int64 seed = get_seconds();
-   return drandz(&seed);
-}*/
-
 
 /********************************************************************************
 

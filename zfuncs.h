@@ -102,9 +102,6 @@ typedef uint8_t      uchar ;
 #define  false  0
 #define  NOP
 
-//  trace execution: source file, function, line no, caller address
-#define TRACE trace(__FILE__,__FUNCTION__,__LINE__,__builtin_return_address(0));
-
 //  system functions ============================================================
 
 void *zmalloc(size_t cc);                                                        //  malloc() wrapper
@@ -116,8 +113,6 @@ void zexit(cchar *message, ...);                                                
 void zbacktrace();                                                               //  produce a backtrace to stdout
 void zappcrash(cchar *format, ...);                                              //  crash with popup message in text window
 void catch_signals();                                                            //  catch signals and do backtrace dump
-void trace(cchar *file, cchar *func, int line, void *addr);                      //  implements TRACE macro
-void tracedump();                                                                //  dump program trace data
 
 void beroot(int argc, char *argv[]);                                             //  restart program as root if password OK
 int  runroot(cchar *command);                                                    //  run command as root via su or sudo
@@ -284,10 +279,6 @@ int pvlist_sort(pvlist *pv);                                                    
 
 uint32 lrandz(uint64* seed);                                                     //  returns 0 to 0x7fffffff
 uint32 lrandz();                                                                 //  built-in seed
-/*
-double drandz(uint64* seed);                                                     //  returns 0.0 to 0.99999...
-double drandz();                                                                 //  built-in seed
-*/
 //  spline curve-fitting functions ==============================================
 
 void spline1(int nn, float *dx, float *dy);                                      //  define a curve using nn data points
