@@ -134,9 +134,6 @@ int  parseprocrec(char *prec, int field, double *value, ...);                   
 int  coretemp();                                                                 //  get CPU core temperature, deg. C
 int  disktemp(char *disk);                                                       //  get disk temp, e.g. "/dev/sda"
 void zsleep(uint64 nanosec);                                                     //  sleep specified seconds
-void make_global_lockfile(cchar *lockname, char **lockfile);                     //  create global lockfile from lock name
-int  global_lock(cchar *lockfile);                                               //  obtain exclusive lock, multi-process
-int  global_unlock(int fd, cchar *lockfile);                                     //  release the lock
 int  resource_lock(int &resource);                                               //  simple lock/unlock usable with GTK
 void resource_unlock(int &resource);                                             //  (never waits, returns lock status)
 int  zget_locked(int &param);                                                    //  lock and get multi-thread parameter

@@ -1045,57 +1045,6 @@ void zsleep(uint64 nanosec){
 
 /********************************************************************************/
 
-//  Lock or unlock a multi-process multi-thread resource.
-//  Only one process/thread may possess a given lock.
-//  A reboot or process exit or crash releases the lock.
-//
-//  char *lockfile;
-//  make_global_lockfile("lockname",&lockfile);
-//  fd = global_lock(lockfile);
-//  err = global_unlock(fd,lockfile);
-//
-//  both functions return +N if success, -1 otherwise.
-
-
-void make_global_lockfile(cchar *lockname, char **lockfile)
-{
-   int      cc;
-
-   *lockfile = zstrdup(lockname,16);
-   cc = strlen(*lockfile);
-   snprintf(*lockfile+cc,12,"-%08d",getpid());                                   //  caller name with PID appended
-   return;
-}
-
-
-int global_lock(cchar *lockfile)
-{
-   int       err, fd;
-
-   fd = open(lockfile,O_RDWR|O_CREAT,0666);                                      //  open or create the lock file
-   if (fd < 0) zappcrash("global_lock() %s",strerror(errno));
-
-   err = flock(fd,LOCK_EX);                                                      //  request exclusive lock
-   if (err) {
-      close(fd);
-      return -1;
-   }
-
-   return fd + 1;                                                                //  return value is >= 1
-}
-
-
-int global_unlock(int fd, cchar *lockfile)
-{
-   int err = close(fd-1);
-   if (err < 0) return -1;
-// remove(lockfile);                                                             //  lock/unlock 2.5x faster
-   return 1;
-}
-
-
-/********************************************************************************/
-
 //  lock or unlock a resource
 //  does not spin or wait, usable within or across threads
 //  CANNOT BE USED for coroutines within one thread, e.g. GTK main loop
