@@ -382,9 +382,12 @@ void m_search()
    return;
 }
 
-
-//  search dialog - widget event response function
-
+/**
+ * @brief search_dialog_event - search dialog - widget event response function
+ * @param zd
+ * @param event
+ * @return
+ */
 int search_dialog_event(zdialog *zd, cchar *event)
 {
    if (zd->zstat)                                                                //  dialog complete
@@ -420,9 +423,12 @@ int search_dialog_event(zdialog *zd, cchar *event)
    return 1;
 }
 
-
-//  break search criteria into 0-Smax search/ignore substrings
-
+/**
+ * @brief break_criteria - break search criteria into 0-Smax search/ignore substrings
+ * @param string
+ * @param strings
+ * @param count
+ */
 void break_criteria(char *string, char *strings[Smax], int &count)
 {
    int         ii;
@@ -449,9 +455,11 @@ void break_criteria(char *string, char *strings[Smax], int &count)
    return;
 }
 
-
-//  search criteria in memory >> dialog widgets
-
+/**
+ * @brief search_dialog_stuff - search criteria in memory >> dialog widgets
+ * @param zd
+ * @return
+ */
 int search_dialog_stuff(zdialog *zd)
 {
    char  ruleMx[8] = "ruleMx", ruleIx[8] = "ruleIx";
@@ -477,9 +485,11 @@ int search_dialog_stuff(zdialog *zd)
    return 0;
 }
 
-
-//  dialog widgets >> search criteria in memory
-
+/**
+ * @brief search_dialog_fetch - dialog widgets >> search criteria in memory
+ * @param zd
+ * @return
+ */
 int search_dialog_fetch(zdialog *zd)
 {
    time_t  search_dialog_fetchdate(cchar *date);
@@ -516,9 +526,11 @@ int search_dialog_fetch(zdialog *zd)
    return 0;
 }
 
-
-//  get a date from search dialog, format: -days  or  yyyy-mm-dd
-
+/**
+ * @brief search_dialog_fetchdate - get a date from search dialog, format: -days  or  yyyy-mm-dd
+ * @param date
+ * @return
+ */
 time_t search_dialog_fetchdate(cchar *date)
 {
    cchar       *pp;
@@ -553,9 +565,9 @@ time_t search_dialog_fetchdate(cchar *date)
    return now1;
 }
 
-
-//  directory scan / file search function
-
+/**
+ * @brief filescan - directory scan / file search function
+ */
 void filescan()
 {
    int         ccp, ccf, ii, jj;
@@ -964,9 +976,16 @@ int filesearch(cchar *filename)
    return filematch;
 }
 
-
-//  search a single record for strings to match and strings not to match (ignore strings)
-
+/**
+ * @brief recsearch - search a single record for strings to match and strings not to match (ignore strings)
+ * @param buff
+ * @param Rmatch
+ * @param nsrs
+ * @param Rignore
+ * @param nigs
+ * @param recmatch
+ * @param recignore
+ */
 void recsearch(char *buff,                                                       //  record to search
                int Rmatch[], int nsrs,                                           //  search strings matched
                int Rignore[], int nigs,                                          //  ignore strings matched
@@ -1043,149 +1062,159 @@ void recsearch(char *buff,                                                      
 }
 
 
-//  Search a record for a string between delimiters which matches an input wildcard string.
-//  Returns position of matching string within record, and its length in 'cc'.
-//  Returns null if no match is found.
-//  If ignorecase is not null, case is ignored in the string comparison.
+//
+/**
+ * @brief recsearch1 - Search a record for a string between delimiters which matches an input wildcard string.
+ *                     Returns position of matching string within record, and its length in 'cc'.
+ *                     Returns null if no match is found.
+ *                     If ignorecase is not null, case is ignored in the string comparison.
+ * @param record
+ * @param wildstr
+ * @param delims
+ * @param cc
+ * @param ignorecase
+ * @return
+ */
+char* recsearch1(char *record, char *wildstr, char *delims, int &cc, int ignorecase){                               // 2.5
+  char     *pp1, *pp2, delim;
+  int      mm;
 
-char * recsearch1(char *record, char *wildstr, char *delims, int &cc, int ignorecase)                                // 2.5
-{
-   char     *pp1, *pp2, delim;
-   int      mm;
+  pp1 = record;
 
-   pp1 = record;
-
-   while (true)
-   {
-      while (*pp1 && strchr(delims,*pp1)) pp1++;                                 //  scan to next non-delimiter
-      if (! *pp1) return 0;                                                      //  end of input, not found
-      pp2 = pp1 + 1;                                                             //  pp1 = start of string in record
-      while (*pp2 && ! strchr(delims,*pp2)) pp2++;                               //  pp2 = next delimiter or null
-      cc = pp2 - pp1;                                                            //  characters between pp1, pp2
-      if (cc > 0) {                                                              //  length of string in record
-         delim = *pp2;                                                           //  save delimiter at pp2
-         *pp2 = 0;                                                               //  replace with null delimiter
-         if (! ignorecase) mm = MatchWild(wildstr,pp1);                          //  test for wildcard match
-         else mm = MatchWildIgnoreCase(wildstr,pp1);                             //  test ignoring string case
-         *pp2 = delim;                                                           //  restore pp2 delimiter
-         if (mm == 0) return pp1;                                                //  if match, return position, length
-      }
-      pp1 = pp2;                                                                 //  pp1 = next delimiter or null
-   }
+  while (true){
+    while (*pp1 && strchr(delims,*pp1)) pp1++;                                 //  scan to next non-delimiter
+    if (! *pp1) return 0;                                                      //  end of input, not found
+    pp2 = pp1 + 1;                                                             //  pp1 = start of string in record
+    while (*pp2 && ! strchr(delims,*pp2)) pp2++;                               //  pp2 = next delimiter or null
+    cc = pp2 - pp1;                                                            //  characters between pp1, pp2
+    if (cc > 0) {                                                              //  length of string in record
+       delim = *pp2;                                                           //  save delimiter at pp2
+       *pp2 = 0;                                                               //  replace with null delimiter
+       if (! ignorecase) mm = MatchWild(wildstr,pp1);                          //  test for wildcard match
+       else mm = MatchWildIgnoreCase(wildstr,pp1);                             //  test ignoring string case
+       *pp2 = delim;                                                           //  restore pp2 delimiter
+       if (mm == 0) return pp1;                                                //  if match, return position, length
+    }
+    pp1 = pp2;                                                                 //  pp1 = next delimiter or null
+  }
+  return nullptr;
 }
 
+/**
+ * @brief load_file - load search criteria from a file
+ * @param zd
+ */
+void load_file(zdialog *zd){                                                    //  1.2
+  char     *file;
+  cchar    *dialogtitle = "load search criteria from file";
+  int      err;
 
-//  load search criteria from a file
+  file = zgetfile(dialogtitle,MWIN,"file",criteriaFile);                        //  get input file from user
+  if (! file) return;
 
-void load_file(zdialog *zd)                                                      //  1.2
-{
-   char     *file;
-   cchar    *dialogtitle = "load search criteria from file";
-   int      err;
+  err = load_file2(file);
+  if (err) {
+    zmessageACK(mWin,"error %s \n %s",strerror(err), file);
+    zfree(file);
+    return;
+  }
 
-   file = zgetfile(dialogtitle,MWIN,"file",criteriaFile);                        //  get input file from user
-   if (! file) return;
-
-   err = load_file2(file);
-   if (err) {
-      zmessageACK(mWin,"error %s \n %s",strerror(err), file);
-      zfree(file);
-      return;
-   }
-
-   search_dialog_stuff(zd);                                                      //  stuff dialog with search criteria
-   return;
+  search_dialog_stuff(zd);                                                      //  stuff dialog with search criteria
+  return;
 }
 
+/**
+ * @brief load_file2 - load file function used by search dialog and initz. function
+ * @param file
+ * @return 0 if OK or 'errno' if not
+ */
+int load_file2(cchar *file){                                                     //  1.2
+  FILE     *fid;
+  char     *pp, buff[Tmax];
+  int      err;
 
-//  load file function used by search dialog and initz. function
-//  returns 0 if OK or 'errno' if not
+  fid = fopen(file,"r");                                                        //  open for read
+  if (! fid) return errno;
 
-int load_file2(cchar *file)                                                      //  1.2
-{
-   FILE     *fid;
-   char     *pp, buff[Tmax];
-   int      err;
+  while (true)
+  {
+    pp = fgets_trim(buff,Tmax,fid,1);
+    if (! pp) break;
 
-   fid = fopen(file,"r");                                                        //  open for read
-   if (! fid) return errno;
+    if (strmatchN(pp,"match rule ",11)) matchrule = atoi(pp+11);
+    if (strmatchN(pp,"ignore rule ",12)) ignorerule = atoi(pp+12);
+    if (strmatchN(pp,"search path ",12)) strcpy(sr_path,pp+12);
+    if (strmatchN(pp,"search file ",12)) strcpy(sr_file,pp+12);
+    if (strmatchN(pp,"search string ",14)) strcpy(sr_string,pp+14);
+    if (strmatchN(pp,"ignore files ",13)) strcpy(ig_file,pp+13);
+    if (strmatchN(pp,"ignore string ",14)) strcpy(ig_string,pp+14);
+    if (strmatchN(pp,"delimiters ",11)) strncpy0(delims,pp+11,100);
+    if (strmatchN(pp,"date from ",10)) strcpy(date_from,pp+10);
+    if (strmatchN(pp,"date to ",8)) strcpy(date_to,pp+8);
+  }
 
-   while (true)
-   {
-      pp = fgets_trim(buff,Tmax,fid,1);
-      if (! pp) break;
+  err = fclose(fid);
+  if (err) return errno;
 
-      if (strmatchN(pp,"match rule ",11)) matchrule = atoi(pp+11);
-      if (strmatchN(pp,"ignore rule ",12)) ignorerule = atoi(pp+12);
-      if (strmatchN(pp,"search path ",12)) strcpy(sr_path,pp+12);
-      if (strmatchN(pp,"search file ",12)) strcpy(sr_file,pp+12);
-      if (strmatchN(pp,"search string ",14)) strcpy(sr_string,pp+14);
-      if (strmatchN(pp,"ignore files ",13)) strcpy(ig_file,pp+13);
-      if (strmatchN(pp,"ignore string ",14)) strcpy(ig_string,pp+14);
-      if (strmatchN(pp,"delimiters ",11)) strncpy0(delims,pp+11,100);
-      if (strmatchN(pp,"date from ",10)) strcpy(date_from,pp+10);
-      if (strmatchN(pp,"date to ",8)) strcpy(date_to,pp+8);
-   }
-
-   err = fclose(fid);
-   if (err) return errno;
-
-   strcpy(criteriaFile,file);                                                    //  update current file
-   return 0;
+  strcpy(criteriaFile,file);                                                    //  update current file
+  return 0;
 }
 
+/**
+ * @brief save_file - save search criteria to a file
+ * @param zd
+ */
+void save_file(zdialog *zd){                                                    //  1.2
 
-//  save search criteria to a file
+  FILE     *fid;
+  char     *file;
+  cchar    *dialogtitle = "save search criteria to a file";
+  int      err;
 
-void save_file(zdialog *zd)                                                      //  1.2
-{
-   FILE     *fid;
-   char     *file;
-   cchar    *dialogtitle = "save search criteria to a file";
-   int      err;
+  search_dialog_fetch(zd);                                                      //  get search criteria from dialog
 
-   search_dialog_fetch(zd);                                                      //  get search criteria from dialog
+  file = zgetfile(dialogtitle,MWIN,"save",criteriaFile);                        //  get output file from user
+  if (! file) return;
 
-   file = zgetfile(dialogtitle,MWIN,"save",criteriaFile);                        //  get output file from user
-   if (! file) return;
+  fid = fopen(file,"w");                                                        //  open for write
+  if (! fid) {
+    zmessageACK(mWin,"unable to open file %s",file);
+    zfree(file);
+    return;
+  }
 
-   fid = fopen(file,"w");                                                        //  open for write
-   if (! fid) {
-      zmessageACK(mWin,"unable to open file %s",file);
-      zfree(file);
-      return;
-   }
+  fprintf(fid,"match rule %d \n",matchrule);                                    //  write search criteria to file
+  fprintf(fid,"ignore rule %d \n",ignorerule);
+  fprintf(fid,"search path %s \n",sr_path);
+  fprintf(fid,"search file %s \n",sr_file);
+  fprintf(fid,"search string %s \n",sr_string);
+  fprintf(fid,"ignore files %s \n",ig_file);
+  fprintf(fid,"ignore string %s \n",ig_string);
+  fprintf(fid,"delimiters %s \n",delims);
+  fprintf(fid,"date from %s \n",date_from);
+  fprintf(fid,"date to %s \n",date_to);
+  fprintf(fid,"\n");
 
-   fprintf(fid,"match rule %d \n",matchrule);                                    //  write search criteria to file
-   fprintf(fid,"ignore rule %d \n",ignorerule);
-   fprintf(fid,"search path %s \n",sr_path);
-   fprintf(fid,"search file %s \n",sr_file);
-   fprintf(fid,"search string %s \n",sr_string);
-   fprintf(fid,"ignore files %s \n",ig_file);
-   fprintf(fid,"ignore string %s \n",ig_string);
-   fprintf(fid,"delimiters %s \n",delims);
-   fprintf(fid,"date from %s \n",date_from);
-   fprintf(fid,"date to %s \n",date_to);
-   fprintf(fid,"\n");
+  err = fclose(fid);
+  if (err) {
+    zmessageACK(mWin,"file I/O error %s",file);
+    zfree(file);
+    return;
+  }
 
-   err = fclose(fid);
-   if (err) {
-      zmessageACK(mWin,"file I/O error %s",file);
-      zfree(file);
-      return;
-   }
+  strcpy(criteriaFile,file);                                                    //  update current file
+  zfree(file);
 
-   strcpy(criteriaFile,file);                                                    //  update current file
-   zfree(file);
+  return;
+  }
 
-   return;
+/**
+ * @brief KBevent - supply unused zdialog callback function
+ * @param event
+ */
+void KBevent(GdkEventKey *event){
+  return;
 }
-
-
-//  supply unused zdialog callback function
-
-void KBevent(GdkEventKey *event)
-{ return; }
 
 
 
