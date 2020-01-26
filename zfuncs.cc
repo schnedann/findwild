@@ -234,41 +234,45 @@
 *********************************************************************************/
 
 namespace zfuncs{
-   constexpr static size_t const defaultbuffersize = 200;
-   constexpr static size_t const maxpathlength = 200;
-   constexpr static size_t const maxfilelength = 100;
-   constexpr static size_t const maxapp1namelength = 60;
-   constexpr static size_t const maxapp2namelength = 40;
 
-   struct timeb   startime;                                                      //  app startup time
-   GdkDisplay     *display;                                                      //  workstation (KB, mouse, screen)
-   GdkScreen      *screen;                                                       //  screen, N monitors
-   GdkDevice      *mouse;                                                        //  pointer device
-   GtkSettings    *gtksettings = 0;                                              //  screen settings
-   cchar          *build_date_time = __DATE__ " " __TIME__;                      //  build date and time
-   char           *progexe = 0;                                                  //  executable image file
-   char           *appimagexe = 0;                                               //  appimage executable image file
-   int            monitor_ww, monitor_hh;                                        //  monitor dimensions
-   int            appfontsize = 10;                                              //  application font size
-   cchar          *appfont = "sans 10";                                          //  application font defaults
-   cchar          *appboldfont = "sans bold 10";
-   cchar          *appmonofont = "mono 10";
-   cchar          *appmonoboldfont = "mono bold 10";
-   char           zappname[maxapp2namelength] = "undefined";                     //  appname without version
-   char           zappvers[maxapp2namelength] = "undefined";                     //  appname-N.N
-   char           zprefix[maxpathlength];                                        //  app folders
-   char           zdatadir[maxpathlength];
-   char           zdocdir[maxpathlength];
-   char           zlocalesdir[maxpathlength];
-   char           zimagedir[maxpathlength];
-   char           zhomedir[maxpathlength];
-   char           zlocale[8] = "en";                                             //  "lc" or "lc_RC"
-   pthread_t      tid_main = 0;                                                  //  main() thread ID
-   int            vmenuclickposn;                                                //  Vmenu image click posn. 0-100
-   int            vmenuclickbutton;                                              //  button: 1/2/3 = L/M/R mouse
-   zdialog        *zdialog_list[zdialog_max];                                    //  active zdialog list
-   int            zdialog_count = 0;                                             //  total zdialogs (new - free)
-   int            zdialog_busy = 0;                                              //  open zdialogs (run - destroy)
+  constexpr static bool const use_log2file     = false;
+  constexpr static bool const use_preserve_log = false;
+
+  constexpr static size_t const defaultbuffersize = 200;
+  constexpr static size_t const maxpathlength = 200;
+  constexpr static size_t const maxfilelength = 100;
+  constexpr static size_t const maxapp1namelength = 60;
+  constexpr static size_t const maxapp2namelength = 40;
+
+  struct timeb   startime;                                                      //  app startup time
+  GdkDisplay     *display;                                                      //  workstation (KB, mouse, screen)
+  GdkScreen      *screen;                                                       //  screen, N monitors
+  GdkDevice      *mouse;                                                        //  pointer device
+  GtkSettings    *gtksettings = 0;                                              //  screen settings
+  cchar          *build_date_time = __DATE__ " " __TIME__;                      //  build date and time
+  char           *progexe = 0;                                                  //  executable image file
+  char           *appimagexe = 0;                                               //  appimage executable image file
+  int            monitor_ww, monitor_hh;                                        //  monitor dimensions
+  int            appfontsize = 10;                                              //  application font size
+  cchar          *appfont = "sans 10";                                          //  application font defaults
+  cchar          *appboldfont = "sans bold 10";
+  cchar          *appmonofont = "mono 10";
+  cchar          *appmonoboldfont = "mono bold 10";
+  char           zappname[maxapp2namelength] = "undefined";                     //  appname without version
+  char           zappvers[maxapp2namelength] = "undefined";                     //  appname-N.N
+  char           zprefix[maxpathlength];                                        //  app folders
+  char           zdatadir[maxpathlength];
+  char           zdocdir[maxpathlength];
+  char           zlocalesdir[maxpathlength];
+  char           zimagedir[maxpathlength];
+  char           zhomedir[maxpathlength];
+  char           zlocale[8] = "en";                                             //  "lc" or "lc_RC"
+  pthread_t      tid_main = 0;                                                  //  main() thread ID
+  int            vmenuclickposn;                                                //  Vmenu image click posn. 0-100
+  int            vmenuclickbutton;                                              //  button: 1/2/3 = L/M/R mouse
+  zdialog        *zdialog_list[zdialog_max];                                    //  active zdialog list
+  int            zdialog_count = 0;                                             //  total zdialogs (new - free)
+  int            zdialog_busy = 0;                                              //  open zdialogs (run - destroy)
 }
 
 using namespace zfuncs;
@@ -4630,16 +4634,20 @@ int zinitapp(cchar *appvers, cchar *homedir)                                    
    chTnow = ctime(&Tnow);
    chTnow[19] = 0;                                                               //  eliminate hundredths of seconds
 
-   if (! isatty(fileno(stdin))) {                                                //  not attached to a terminal
-      snprintf(logfile,maxpathlength,"%s/logfile",zhomedir);                               //  /home/<user>/logfile
-      snprintf(oldlog,maxpathlength,"%s/logfile.old",zhomedir);
-      err = stat(logfile,&statb);
-      if (! err) rename(logfile,oldlog);                                         //  rename old log file
-      fid = freopen(logfile,"w",stdout);                                         //  redirect output to log file
-      bool fail = (nullptr==fid);
-      fid = freopen(logfile,"w",stderr);
-      fail |= (nullptr==fid);
-      if (fail) printz("*** cannot redirect stdout and stderr \n");
+   if(use_log2file){
+     if(!isatty(fileno(stdin))){                                                //  not attached to a terminal
+        snprintf(logfile,maxpathlength,"%s/logfile",zhomedir);                     //  /home/<user>/logfile
+        if(use_preserve_log){
+          snprintf(oldlog,maxpathlength,"%s/logfile.old",zhomedir);
+          err = stat(logfile,&statb);                                               //  rename old log file
+          if (-1!=err) rename(logfile,oldlog);
+        }
+        fid = freopen(logfile,"w",stdout);                                         //  redirect output to log file
+        bool fail = (nullptr==fid);
+        fid = freopen(logfile,"w",stderr);
+        fail |= (nullptr==fid);
+        if (fail) printz("*** cannot redirect stdout and stderr \n");
+     }
    }
 
    printz("start %s %s \n",zappname,chTnow);
