@@ -311,9 +311,14 @@ void zfree(void *puser){
    return free(puser);
 }
 
-
+/**
+ * @brief zstrdup
+ * @param string
+ * @param addcc
+ * @return
+ */
 char *zstrdup(cchar *string, int addcc){
-  if(nullptr!=string){
+  if (nullptr == string){
     zappcrash("zstrdup() null arg");
   }
   char *pp = (char *) zmalloc(strlen(string) + 1 + addcc);                      //  add additional chars.
