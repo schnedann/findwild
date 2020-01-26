@@ -9,3 +9,6 @@ SOURCES += \
 
 HEADERS += \
   ../../zfuncs.h
+
+DISTFILES += \
+  ../../Makefile
