@@ -159,17 +159,6 @@ int  zreaddir(cchar *folder, char **&files);                                    
 char * combine_argvs(int argc, char *argv[], int Nth);                           //  combine argv[ii] elements Nth to last
 char * zescape_quotes(cchar *file);                                              //  escape quote marks (") in file name
 
-//  measure CPU time spent in a function or code block within a function
-
-extern VOL double cpu_profile_timer;                                             //  internal data tables
-extern VOL double cpu_profile_table[100];
-extern VOL double cpu_profile_elapsed;
-void cpu_profile_init();                                                         //  initialize at start of test
-void cpu_profile_report();                                                       //  report CPU time per function
-inline void cpu_profile_enter(int fnum)                                          //  at entry to measured code block
-{  cpu_profile_timer = cpu_profile_elapsed;  }
-inline void cpu_profile_exit(int fnum)                                           //  at exit from measured code block
-{  cpu_profile_table[fnum] += cpu_profile_elapsed - cpu_profile_timer; }
 int pagefaultrate();                                                             //  monitor own process hard fault rate
 
 //  string macros and functions =================================================
