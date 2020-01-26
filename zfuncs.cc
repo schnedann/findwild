@@ -233,9 +233,7 @@
 
 *********************************************************************************/
 
-namespace zfuncs
-{
-
+namespace zfuncs{
    constexpr static size_t const maxpathlength = 200;
    constexpr static size_t const maxappnamelength = 40;
 
@@ -337,7 +335,6 @@ char *zstrdup(cchar *string, int addcc){
   return pp;
 }
 
-
 /********************************************************************************/
 
 //  printf() and flush every output immediately even if stdout is a file
@@ -354,7 +351,6 @@ void printz(cchar *format, ...){
   }
   return;
 }
-
 
 /********************************************************************************/
 
@@ -379,7 +375,6 @@ void zexit(cchar *errmess, ...){
   return;
 }
 
-
 /********************************************************************************/
 
 //  produce a backtrace dump to stdout
@@ -395,13 +390,14 @@ void zbacktrace(){
   return;
 }
 
-
 /********************************************************************************/
 
-//  Write an error message and backtrace dump to a file and to a popup window.
-//  Error message works like printf().
-//  Depends on library program addr2line().
-
+/**
+ * @brief zappcrash - Write an error message and backtrace dump to a file and to a popup window.
+ *                    Error message works like printf().
+ *                    Depends on library program addr2line().
+ * @param format
+ */
 void zappcrash(cchar *format, ... ){
   static constexpr int const listsize = 100;
   static constexpr int const buffersize = 300;
@@ -470,7 +466,7 @@ void zappcrash(cchar *format, ... ){
                    arch, OS2, OS3, zappvers, build_date_time, message);
   fprintf(fid2,"*** please send to kornelix@posteo.de *** \n");
 
-  cc = readlink("/proc/self/exe",progexe,buffersize);                                 //  get own program path
+  cc = readlink("/proc/self/exe",progexe,buffersize);                          //  get own program path
   if (cc > 0) progexe[cc] = 0;                                                 //  readlink() quirk
   else {
     fprintf(fid2,"progexe not available \n");
@@ -486,7 +482,7 @@ void zappcrash(cchar *format, ... ){
   for (ii = 0; ii < nstack; ii++)                                              //  loop backtrace records
   {
     pp1 = pp2 = 0;
-    fgets_trim(buff1,buffersize,fid1);                                                //  read backtrace line
+    fgets_trim(buff1,buffersize,fid1);                                         //  read backtrace line
     if (! Flinenos) goto output;
     pfunc = 0;
     pp1 = strstr(buff1,"+0x");                                                 //  new format (+0x12345...)
@@ -500,7 +496,7 @@ void zappcrash(cchar *format, ... ){
     *pp2 = 0;
     strncpy0(hexaddr,pp1+1,20);
     *pp2 = dlim;
-    snprintf(buff2,buffersize,"addr2line -i -e %s %s",progexe,hexaddr);               //  convert to source program
+    snprintf(buff2,buffersize,"addr2line -i -e %s %s",progexe,hexaddr);        //  convert to source program
     fid3 = popen(buff2,"r");                                                   //    and line number
     if (! fid3) goto output;
     pfunc = fgets(buff2,buffersize,fid3);
@@ -518,18 +514,17 @@ output:
   fclose(fid2);
   Qshell(0,0,"rm zbacktrace");
   Qshell(0,0,"cat zappcrash");
-  Qshell(0,0,"mv zappcrash $(xdg-user-dir DESKTOP)/%s-zappcrash",zappvers);     //  move zappcrash file to desktop
+  Qshell(0,0,"mv zappcrash $(xdg-user-dir DESKTOP)/%s-zappcrash",zappvers);    //  move zappcrash file to desktop
   zexit("exit zappcrash");
 }
 
-
 /********************************************************************************/
 
-//  application initialization function to catch some bad news signals
-//  the signal handler calls zappcrash() to output a backtrace dump and exit
-
-void catch_signals()
-{
+/**
+ * @brief catch_signals - application initialization function to catch some bad news signals
+ *                        the signal handler calls zappcrash() to output a backtrace dump and exit
+ */
+void catch_signals(){
   void sighandler(int signal);
   struct sigaction  sigact;
 
@@ -546,11 +541,11 @@ void catch_signals()
   return;
 }
 
-
-//  catch fatal signals and produce backtrace dumps on-screen
-
-void sighandler(int signal)
-{
+/**
+ * @brief sighandler - catch fatal signals and produce backtrace dumps on-screen
+ * @param signal
+ */
+void sighandler(int signal){
   const char  *signame = "unknown";
 
   if (signal == SIGTERM) zexit("TERMINATED");
@@ -572,13 +567,16 @@ void sighandler(int signal)
 //  Trace program execution by function and source code line number.
 //  tracedump() dumps last 50 uses of TRACE macro, latest first.
 
-namespace tracenames
-{
-   char  filebuff[50][100];                                                      //  last 50 TRACE calls
-   char  funcbuff[50][60];
-   int   linebuff[50];
-   void  *addrbuff[50];
-   int   ii, ftf = 1;
+namespace tracenames{
+   static constexpr size_t const num_buffers  =  50;
+   static constexpr size_t const filename_max = 100;
+   static constexpr size_t const funcname_max =  60;
+   char  filebuff[num_buffers][100+1];                                                      //  last 50 TRACE calls
+   char  funcbuff[num_buffers][60+1];
+   int   linebuff[num_buffers];
+   void  *addrbuff[num_buffers];
+   size_t idx = 0;
+   bool once = true;
 };
 
 /**
@@ -589,65 +587,60 @@ namespace tracenames
  * @param line
  * @param addr
  */
-void trace(cchar *file, cchar *func, int line, void *addr)
-{
+void trace(cchar *file, cchar *func, int line, void *addr){
   using namespace tracenames;
 
-  if (ftf) {
-    ftf = 0;
-    for (ii = 0; ii < 50; ii++) {
-      filebuff[ii][99] = 0;
-      funcbuff[ii][39] = 0;
+  if(once){
+    once = false;
+    for (size_t ii = 0; ii < num_buffers; ++ii) {
+      filebuff[ii][filename_max] = 0;
+      funcbuff[ii][funcname_max] = 0;
       linebuff[ii] = 0;
       addrbuff[ii] = 0;
     }
-    ii = 0;
   }
 
-  if (line == linebuff[ii] &&
-  strmatch(func,funcbuff[ii])) return;                                       //  same as last call, don't duplicate
-
-  if (++ii > 49) ii = 0;                                                     //  add data to list
-  strncpy(&filebuff[ii][0],file,99);
-  strncpy(&funcbuff[ii][0],func,39);
-  linebuff[ii] = line;
-  addrbuff[ii] = addr;
+  //  same as last call, don't duplicate
+  if(!(line == linebuff[idx] && strmatch(func,funcbuff[idx]))){
+    if (++idx >= num_buffers) idx = 0;                                                     //  add data to list
+    strncpy(&filebuff[idx][0],file,filename_max);
+    strncpy(&funcbuff[idx][0],func,funcname_max);
+    linebuff[idx] = line;
+    addrbuff[idx] = addr;
+  }
   return;
 }
 
 /**
  * @brief tracedump - dump trace records to STDOUT
  */
-void tracedump()
-{
+void tracedump(){
   using namespace tracenames;
 
   FILE     *fid;
-  int      kk;
+  size_t    kk;
 
   printz(" *** tracedump *** \n");
 
-  kk = ii;
+  kk = idx;
   while (linebuff[kk]) {
     printz("TRACE %s %s %d %p \n",&filebuff[kk][0],&funcbuff[kk][0],linebuff[kk],addrbuff[kk]);
-    if (--kk == ii) break;
+    if (--kk == idx) break;
   }
 
   fid = fopen("tracedump","w");
-  if (! fid) {
+  if(nullptr!=fid){
+    fprintf(fid, " *** tracedump *** \n");
+    kk = idx;
+    while (linebuff[kk]) {
+      fprintf(fid, "TRACE %s %s %d %p \n",&filebuff[kk][0],&funcbuff[kk][0],linebuff[kk],addrbuff[kk]);
+      if (--kk == idx) break;
+    }
+    fclose(fid);
+  }else{
     perror("tracedump fopen() failure \n");
-    return;
   }
 
-  fprintf(fid, " *** tracedump *** \n");
-
-  kk = ii;
-  while (linebuff[kk]) {
-    fprintf(fid, "TRACE %s %s %d %p \n",&filebuff[kk][0],&funcbuff[kk][0],linebuff[kk],addrbuff[kk]);
-    if (--kk == ii) break;
-  }
-
-  fclose(fid);
   return;
 }
 
