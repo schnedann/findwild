@@ -331,8 +331,9 @@ char *zstrdup(cchar *string, int addcc){
   if (nullptr == string){
     zappcrash("zstrdup() null arg");
   }
-  char *pp = (char *) zmalloc(strlen(string) + 1 + addcc);                      //  add additional chars.
-  if(nullptr!=pp) strcpy(pp,string);
+  size_t bytes = strlen(string) + 1 + addcc;
+  char *pp = (char *) zmalloc(bytes);                      //  add additional chars.
+  if(nullptr!=pp) strncpy(pp,string,bytes);
   return pp;
 }
 
