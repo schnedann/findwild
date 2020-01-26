@@ -234,8 +234,11 @@
 *********************************************************************************/
 
 namespace zfuncs{
+   constexpr static size_t const defaultbuffersize = 200;
    constexpr static size_t const maxpathlength = 200;
-   constexpr static size_t const maxappnamelength = 40;
+   constexpr static size_t const maxfilelength = 100;
+   constexpr static size_t const maxapp1namelength = 60;
+   constexpr static size_t const maxapp2namelength = 40;
 
    struct timeb   startime;                                                      //  app startup time
    GdkDisplay     *display;                                                      //  workstation (KB, mouse, screen)
@@ -251,8 +254,8 @@ namespace zfuncs{
    cchar          *appboldfont = "sans bold 10";
    cchar          *appmonofont = "mono 10";
    cchar          *appmonoboldfont = "mono bold 10";
-   char           zappname[maxappnamelength] = "undefined";                      //  appname without version
-   char           zappvers[maxappnamelength] = "undefined";                      //  appname-N.N
+   char           zappname[maxapp2namelength] = "undefined";                     //  appname without version
+   char           zappvers[maxapp2namelength] = "undefined";                     //  appname-N.N
    char           zprefix[maxpathlength];                                        //  app folders
    char           zdatadir[maxpathlength];
    char           zdocdir[maxpathlength];
@@ -756,14 +759,14 @@ double CPUtime2()
 double jobtime()
 {
    double   jiffy = 1.0 / sysconf(_SC_CLK_TCK);                                  //  "jiffy" time slice = 1.0 / HZ
-   char     buff[200];
+   char     buff[defaultbuffersize];
    double   cpu1, cpu2, cpu3, cpu4;
    FILE     *fid;
    char     *pp;
 
    fid = fopen("/proc/self/stat","r");
    if (! fid) return 0;
-   pp = fgets(buff,200,fid);
+   pp = fgets(buff,defaultbuffersize,fid);
    fclose(fid);
    if (! pp) return 0;
 
@@ -966,28 +969,30 @@ int coretemp()
    FILE         *fid;
    static int   ftf = 1;
    static char  *Tfile = 0;
-   static char  buff1[200], buff2[200], *ptemp;
-   int          temp;
+   static char  buff1[defaultbuffersize], buff2[defaultbuffersize], *ptemp;
+   size_t       temp;
 
    if (ftf) {                                                                    //  find file "temp1_input"
       ftf = 0;
       fid = popen("find /sys/devices/ -name temp1_input","r");
       if (! fid) return 0;
-      Tfile = fgets(buff1,200,fid);
+      Tfile = fgets(buff1,defaultbuffersize,fid);
       pclose(fid);
       printz("coretemp file: %s \n",Tfile);
    }
 
    if (! Tfile) return 0;
-   snprintf(buff2,200,"cat %s",Tfile);
+   snprintf(buff2,defaultbuffersize,"cat %s",Tfile);
    fid = popen(buff2,"r");
    if (! fid) return 0;
-   ptemp = fgets_trim(buff2,200,fid);
+   ptemp = fgets_trim(buff2,defaultbuffersize,fid);
    pclose(fid);
    if (! ptemp) return 0;
    temp = atoi(ptemp);
-   while (temp > 200) temp = temp / 10;                                          //  may be deg. C x 10 or x 100 ...
-   if (temp < 10) return 0;
+   while (temp > defaultbuffersize){
+     temp = temp / 10;                                          //  may be deg. C x 10 or x 100 ...
+   }
+   if (temp < 10) temp = 0;
    return temp;
 }
 
@@ -1001,7 +1006,7 @@ int disktemp(char *disk)
 {
    int         id, temp;
    char        *pp, *pp2;
-   char        buff[200], command[100];
+   char        buff[defaultbuffersize], command[100];
    FILE        *ffid;
 
    temp = 0;
@@ -1011,7 +1016,7 @@ int disktemp(char *disk)
    if (! ffid) return 0;
 
    while (true) {
-      pp = fgets(buff,200,ffid);                                                 //  revised for smartctl report
+      pp = fgets(buff,defaultbuffersize,ffid);                                                 //  revised for smartctl report
       if (! pp) break;                                                           //    format changes
       if (strmatchN(pp,"ID#",3)) pp2 = strstr(pp,"RAW_VALUE");
       id = atoi(pp);
@@ -1484,7 +1489,7 @@ int samefolder(cchar *file1, cchar *file2)
 int parsefile(cchar *ppath, char **pfolder, char **pfile, char **pext)
 {
    STATB          statb;
-   static char    folder[1000], file[200], ext[8];
+   static char    folder[1000], file[maxpathlength], ext[8];
    char           *pp;
    int            err, cc1, cc2;
 
@@ -1842,7 +1847,7 @@ void * pagefaultrate_names::threadfunc(void *)
    using namespace pagefaultrate_names;
 
    FILE        *fid;
-   char        *pp, buff[200];
+   char        *pp, buff[defaultbuffersize];
    double      pfs1, pfs2, fps, elaps;
 
    while (true)
@@ -1855,7 +1860,7 @@ void * pagefaultrate_names::threadfunc(void *)
 
       fid = fopen("/proc/self/stat","r");
       if (! fid) break;
-      pp = fgets(buff,200,fid);
+      pp = fgets(buff,defaultbuffersize,fid);
       fclose(fid);
       if (! pp) break;
       pp = strchr(pp,')');                                                       //  closing ')' after (short) filename
@@ -4316,7 +4321,7 @@ void Qtext_put(Qtext *qtext, cchar *format, ...)
 {
    int      qnext;
    va_list  arglist;
-   char     message[200];
+   char     message[defaultbuffersize];
 
    va_start(arglist,format);
    vsnprintf(message,199,format,arglist);
@@ -4387,7 +4392,7 @@ void Qtext_close(Qtext *qtext)
 
 namespace make_appimage_names
 {
-   char     appname1[60], appname2[40];
+   char     appname1[maxapp1namelength], appname2[maxapp2namelength];
 }
 
 
@@ -4399,10 +4404,10 @@ int appimage_install(cchar *appname)
    int      err, cc, nn;
    char     *pp, *homedir;
    char     buff[300];
-   char     desktopfile1[100], desktopfile2[100];
-   char     iconfile1[100], iconfile2[100];
-   char     exectext1[100], exectext2[100];
-   char     icontext1[100], icontext2[100];
+   char     desktopfile1[maxfilelength], desktopfile2[maxfilelength];
+   char     iconfile1[maxfilelength], iconfile2[maxfilelength];
+   char     exectext1[maxfilelength], exectext2[maxfilelength];
+   char     icontext1[maxfilelength], icontext2[100];
 
    pp = getenv("APPIMAGE");                                                      //  appimage executable file
    if (! pp) return 3;
@@ -4410,7 +4415,7 @@ int appimage_install(cchar *appname)
    appimagexe = pp;
    pp = strrchr(appimagexe,'/');
    if (! pp) return 4;
-   strncpy0(appname1,pp+1,60);                                                   //  appname1: appname-NN.N-appimage
+   strncpy0(appname1,pp+1,maxapp1namelength);                                                   //  appname1: appname-NN.N-appimage
 
    pp = strchr(appname1,'-');
    if (! pp) return 4;
@@ -4434,13 +4439,13 @@ int appimage_install(cchar *appname)
 
    //  /.../usr/share/appname/appname.desktop  >>  /home/<user>/.local/share/applications/appname.desktop
 
-   snprintf(desktopfile1,100,"%s/share/%s/%s.desktop",buff,appname2,appname2);
-   snprintf(desktopfile2,100,"%s/.local/share/applications/%s.desktop",homedir,appname2);
+   snprintf(desktopfile1,maxfilelength,"%s/share/%s/%s.desktop",buff,appname2,appname2);
+   snprintf(desktopfile2,maxfilelength,"%s/.local/share/applications/%s.desktop",homedir,appname2);
 
    //  /.../usr/share/appname/appname.png  >>  /home/<user>/.local/share/icons/appname.png
 
-   snprintf(iconfile1,100,"%s/share/%s/icons/%s.png",buff,appname2,appname2);
-   snprintf(iconfile2,100,"%s/.local/share/icons/%s.png",homedir,appname2);
+   snprintf(iconfile1,maxfilelength,"%s/share/%s/icons/%s.png",buff,appname2,appname2);
+   snprintf(iconfile2,maxfilelength,"%s/.local/share/icons/%s.png",homedir,appname2);
 
    fid = fopen(desktopfile2,"r");                                                //  open existing desktop file
    if (fid) {
@@ -4470,11 +4475,11 @@ int appimage_install(cchar *appname)
       return 4;
    }
 
-   snprintf(exectext1,100,"Exec=%s",appname2);                                   //  Exec=appname2
-   snprintf(exectext2,100,"Exec=%s",appimagexe);                                 //  Exec=appimagexe
+   snprintf(exectext1,maxfilelength,"Exec=%s",appname2);                                   //  Exec=appname2
+   snprintf(exectext2,maxfilelength,"Exec=%s",appimagexe);                                 //  Exec=appimagexe
 
-   snprintf(icontext1,100,"Icon=/usr/share/%s/icons/%s.png",appname2,appname2);
-   snprintf(icontext2,100,"Icon=%s",iconfile2);
+   snprintf(icontext1,maxfilelength,"Icon=/usr/share/%s/icons/%s.png",appname2,appname2);
+   snprintf(icontext2,maxfilelength,"Icon=%s",iconfile2);
 
    err = zsed(desktopfile2,exectext1,exectext2,icontext1,icontext2,null);        //  make text substitutions
    if (err < 0) {                                                                //  failure
@@ -4502,8 +4507,8 @@ void appimage_unstall()
    using namespace make_appimage_names;
 
    char     *homedir;
-   char     desktopfileloc[200];
-   char     iconfileloc[200];
+   char     desktopfileloc[defaultbuffersize];
+   char     iconfileloc[defaultbuffersize];
 
    if (! appimagexe) {
       printz("not an appimage, nothing was done \n");
@@ -4512,8 +4517,8 @@ void appimage_unstall()
 
    homedir = getenv("HOME");
 
-   snprintf(desktopfileloc,200,"%s/.local/share/applications/",homedir);
-   snprintf(iconfileloc,200,"%s/.local/share/icons/",homedir);
+   snprintf(desktopfileloc,defaultbuffersize,"%s/.local/share/applications/",homedir);
+   snprintf(iconfileloc,defaultbuffersize,"%s/.local/share/icons/",homedir);
 
    Qshell(1,1,"rm -f %s/%s.desktop",desktopfileloc,appname2);
    Qshell(1,1,"rm -f %s/%s.png",iconfileloc,appname2);
@@ -4556,18 +4561,18 @@ void appimage_unstall()
 
 ***/
 
-cchar * get_zprefix() { return zfuncs::zprefix; }                                //  /usr or /home/<user>
-cchar * get_zhomedir() { return zfuncs::zhomedir; }                              //  /home/<user>/.appname or /root/.appname
-cchar * get_zdatadir() { return zfuncs::zdatadir; }                              //  data files
-cchar * get_zdocdir()  { return zfuncs::zdocdir;  }                              //  documentation files
-cchar * get_zimagedir()  { return zfuncs::zimagedir;  }                          //  image files
+cchar * get_zprefix()      { return zfuncs::zprefix; }                           //  /usr or /home/<user>
+cchar * get_zhomedir()     { return zfuncs::zhomedir; }                          //  /home/<user>/.appname or /root/.appname
+cchar * get_zdatadir()     { return zfuncs::zdatadir; }                          //  data files
+cchar * get_zdocdir()      { return zfuncs::zdocdir;  }                          //  documentation files
+cchar * get_zimagedir()    { return zfuncs::zimagedir;  }                        //  image files
 cchar * get_zlocalesdir()  { return zfuncs::zlocalesdir;  }                      //  translation files
 
 
 int zinitapp(cchar *appvers, cchar *homedir)                                     //  appname-N.N, opt. home dir
 {
-   char        logfile[200], oldlog[200];
-   char        buff[300], Phomedir[200];
+   char        logfile[maxpathlength+1], oldlog[maxpathlength+1];
+   char        buff[300], Phomedir[maxpathlength+1];
    char        *pp, *chTnow;
    int         cc, err;
    time_t      Tnow;
@@ -4597,10 +4602,10 @@ int zinitapp(cchar *appvers, cchar *homedir)                                    
    if (pp) *pp = 0;
 
    if (homedir && *homedir == '/')                                               //  homedir from caller
-      strncpy0(zhomedir,homedir,199);
+      strncpy0(zhomedir,homedir,maxpathlength);
    else
    {
-      snprintf(zhomedir,199,"%s/.%s",getenv("HOME"),zappname);                   //  use /home/<user>/.appname
+      snprintf(zhomedir,maxpathlength,"%s/.%s",getenv("HOME"),zappname);                   //  use /home/<user>/.appname
       snprintf(Phomedir,200,"%s-home",zhomedir);                                 //  check /home/<user>/.appname-home
       fid = fopen(Phomedir,"r");
       if (fid) {
@@ -4626,8 +4631,8 @@ int zinitapp(cchar *appvers, cchar *homedir)                                    
    chTnow[19] = 0;                                                               //  eliminate hundredths of seconds
 
    if (! isatty(fileno(stdin))) {                                                //  not attached to a terminal
-      snprintf(logfile,199,"%s/logfile",zhomedir);                               //  /home/<user>/logfile
-      snprintf(oldlog,199,"%s/logfile.old",zhomedir);
+      snprintf(logfile,maxpathlength,"%s/logfile",zhomedir);                               //  /home/<user>/logfile
+      snprintf(oldlog,maxpathlength,"%s/logfile.old",zhomedir);
       err = stat(logfile,&statb);
       if (! err) rename(logfile,oldlog);                                         //  rename old log file
       fid = freopen(logfile,"w",stdout);                                         //  redirect output to log file
@@ -4650,13 +4655,13 @@ int zinitapp(cchar *appvers, cchar *homedir)                                    
    if (pp) *pp = 0;
    else (strcpy(zprefix,"/usr"));                                                //  if /xxxxx/bin --> /xxxxx
 
-   strncatv(zdatadir,199,zprefix,"/share/",zappname,"/data",null);               //  /prefix/share/appname/data
-   strncatv(zimagedir,199,zprefix,"/share/",zappname,"/images",null);            //  /prefix/share/appname/images
-   strncatv(zlocalesdir,199,zprefix,"/share/",zappname,"/locales",null);         //  /prefix/share/appname/locales
-   strncatv(zdocdir,199,zprefix,"/share/doc/",zappname,null);                    //  /prefix/share/doc/appname
+   strncatv(zdatadir,maxpathlength,zprefix,"/share/",zappname,"/data",null);               //  /prefix/share/appname/data
+   strncatv(zimagedir,maxpathlength,zprefix,"/share/",zappname,"/images",null);            //  /prefix/share/appname/images
+   strncatv(zlocalesdir,maxpathlength,zprefix,"/share/",zappname,"/locales",null);         //  /prefix/share/appname/locales
+   strncatv(zdocdir,maxpathlength,zprefix,"/share/doc/",zappname,null);                    //  /prefix/share/doc/appname
 
    #ifdef DOCDIR
-      strncpy0(zdocdir,DOCDIR,199);                                              //  flexible DOCDIR location (SUSE)
+      strncpy0(zdocdir,DOCDIR,maxpathlength);                                              //  flexible DOCDIR location (SUSE)
    #endif
 
    if (! strmatch(zappname,"fotoxx-maps"))                                       //  omit fotoxx-maps
