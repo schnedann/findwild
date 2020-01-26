@@ -10277,6 +10277,20 @@ int zdialog_fetch(zdialog *zd, cchar *name, char *data, int maxcc)              
    return strncpy0(data,zdata,maxcc);                                            //  0 = OK, 1 = truncation
 }
 
+int zdialog_fetch(zdialog *zd, cchar *name, bool &idata)                          //  fetch an Boolean
+{
+   cchar  *zdata;
+
+   zdata = zdialog_get_data(zd,name);
+   if (! zdata) {
+      idata = false;
+      return 0;
+   }
+
+   idata = (atoi(zdata)>0)?(true):(false);
+   return 1;
+}
+
 int zdialog_fetch(zdialog *zd, cchar *name, int &idata)                          //  fetch an integer
 {
    cchar  *zdata;

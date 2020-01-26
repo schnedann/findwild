@@ -568,6 +568,7 @@ int zdialog_stuff(zdialog *zd, cchar *name, double data, cchar *format);        
 int zdialog_labelfont(zdialog *zd, cchar *lab, cchar *font, cchar *txt);         //  stuff label text with font
 
 int zdialog_fetch(zdialog *zd, cchar *name, char *data, int maxcc);              //  get string data from widget
+int zdialog_fetch(zdialog *zd, cchar *name, bool &idata);
 int zdialog_fetch(zdialog *zd, cchar *name, int  &data);                         //  get int data
 int zdialog_fetch(zdialog *zd, cchar *name, double &data);                       //  get double data
 int zdialog_fetch(zdialog *zd, cchar *name, float &data);                        //  get float data

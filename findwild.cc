@@ -66,8 +66,8 @@ char        delims[100];                                                        
 char        date_from[20], date_to[20];                                          //  date range, string format
 time_t      dt_from, dt_to;                                                      //  date range, binary format
 int         Fhits;                                                               //  flag, search prior search hits
-int         FignorecaseF = 0;                                                    //  flag, ignore case searching files
-int         FignorecaseS = 0;                                                    //  flag, ignore case searching strings
+bool        FignorecaseF = false;                                                //  flag, ignore case searching files
+bool        FignorecaseS = false;                                                //  flag, ignore case searching strings
 
 cchar  *mstext[3] = { "any search string", "all search strings",
                       "all search strings in same record" };
@@ -471,8 +471,8 @@ int search_dialog_stuff(zdialog *zd)
    ruleIx[5] = ignorerule + '0';
    zdialog_stuff(zd,ruleMx,1);
    zdialog_stuff(zd,ruleIx,1);
-   zdialog_stuff(zd,"FignorecaseF",FignorecaseF);                                //  1.8
-   zdialog_stuff(zd,"FignorecaseS",FignorecaseS);                                //  1.7
+   zdialog_stuff(zd,"FignorecaseF",int(FignorecaseF));                                //  1.8
+   zdialog_stuff(zd,"FignorecaseS",int(FignorecaseS));                                //  1.7
    zdialog_stuff(zd,"sr_path",sr_path);
    zdialog_stuff(zd,"sr_file",sr_file);
    zdialog_stuff(zd,"sr_string",sr_string);
@@ -612,16 +612,16 @@ void filescan()
    textwidget_append(mLog,0,"   ignore string(s): %s \n",ig_string);
    textwidget_append(mLog,0,"  string delimiters: %s \n",delims);
 
-   if (FignorecaseF)                                                             //  1.8
+   if(FignorecaseF){                                                             //  1.8
       textwidget_append(mLog,0," ignore file case: YES \n");
-   else
+   }else{
       textwidget_append(mLog,0," ignore file case: NO \n");
-
-   if (FignorecaseS)                                                             //  1.7
+   }
+   if(FignorecaseS){                                                             //  1.7
       textwidget_append(mLog,0," ignore string case: YES \n");
-   else
+   }else{
       textwidget_append(mLog,0," ignore string case: NO \n");
-
+   }
    if (dt_from || dt_to) {                                                       //  report date range if defined
       dfrom = *localtime(&dt_from);
       dto = *localtime(&dt_to);
@@ -793,11 +793,11 @@ int filesearch(cchar *filename)
                   int Rignore[], int nigs,                                       //  ignore strings matched
                   int &recmatch, int &recignore);                                //  returned total counts
 
-   char * recsearch1(char *record,                                               //  record to search                   2.5
-                     char *wildstr,                                              //  wildcard string to search for
-                     char *delims,                                               //  string delimiters in record
+   char * recsearch1(char* const record,                                         //  record to search                   2.5
+                     char* const wildstr,                                        //  wildcard string to search for
+                     char* const delims,                                         //  string delimiters in record
                      int &cc,                                                    //  length of returned match string
-                     int ignorecase);                                            //  ignore case flag
+                     bool ignorecase);                                           //  ignore case flag
 
    int      Fmatch[Smax], Fignore[Smax];                                         //  search and ignore strings in file
    int      Rmatch[Smax], Rignore[Smax];                                         //  search and ignore strings in record
@@ -1075,29 +1075,40 @@ void recsearch(char *buff,                                                      
  * @param ignorecase
  * @return
  */
-char* recsearch1(char *record, char *wildstr, char *delims, int &cc, int ignorecase){                               // 2.5
+char* recsearch1(char* const record, char* const wildstr, char* const delims, int& cc, bool ignorecase){                               // 2.5
   char     *pp1, *pp2, delim;
   int      mm;
-
   pp1 = record;
 
   while (true){
-    while (*pp1 && strchr(delims,*pp1)) pp1++;                                 //  scan to next non-delimiter
-    if (! *pp1) return 0;                                                      //  end of input, not found
+    //  scan to next non-delimiter
+    while ((*pp1=='\0') && strchr(delims,*pp1)){
+      ++pp1;
+    }
+    if(*pp1=='\0'){
+      pp1=nullptr;                                                             //  end of input, not found
+      goto exit;
+    }
     pp2 = pp1 + 1;                                                             //  pp1 = start of string in record
-    while (*pp2 && ! strchr(delims,*pp2)) pp2++;                               //  pp2 = next delimiter or null
+    while (*pp2 && ! strchr(delims,*pp2)) ++pp2;                               //  pp2 = next delimiter or null
     cc = pp2 - pp1;                                                            //  characters between pp1, pp2
     if (cc > 0) {                                                              //  length of string in record
        delim = *pp2;                                                           //  save delimiter at pp2
        *pp2 = 0;                                                               //  replace with null delimiter
-       if (! ignorecase) mm = MatchWild(wildstr,pp1);                          //  test for wildcard match
-       else mm = MatchWildIgnoreCase(wildstr,pp1);                             //  test ignoring string case
+       if(!ignorecase){
+         mm = MatchWild(wildstr,pp1);                                          //  test for wildcard match
+       }else{
+         mm = MatchWildIgnoreCase(wildstr,pp1);                                //  test ignoring string case
+       }
        *pp2 = delim;                                                           //  restore pp2 delimiter
-       if (mm == 0) return pp1;                                                //  if match, return position, length
+       if(0==mm){
+         goto exit;                                                            //  if match, return position, length
+       }
     }
     pp1 = pp2;                                                                 //  pp1 = next delimiter or null
   }
-  return nullptr;
+exit:
+  return pp1;
 }
 
 /**
